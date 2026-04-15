@@ -26,41 +26,42 @@
         input, textarea, select, button { font-size: 16px !important; }
     </style>
 </head>
-<body class="text-slate-800 antialiased app-h flex flex-col lg:flex-row overflow-hidden">
+<!-- 將觸發雙欄的斷點改為 xl (1280px)，確保所有 iPad 皆使用滿版 Top Nav 避免擠壓 -->
+<body class="text-slate-800 antialiased app-h flex flex-col xl:flex-row overflow-hidden">
 
-    <aside class="w-full lg:w-80 bg-slate-900 text-white flex flex-col flex-shrink-0 z-30 shadow-md lg:shadow-xl lg:h-full">
-        <div class="p-3 lg:p-6 flex flex-row lg:flex-col justify-between items-center lg:items-stretch border-b border-slate-700/80 gap-2 lg:gap-5">
+    <aside class="w-full xl:w-80 bg-slate-900 text-white flex flex-col flex-shrink-0 z-30 shadow-md xl:shadow-xl xl:h-full">
+        <div class="p-3 xl:p-6 flex flex-row xl:flex-col justify-between items-center xl:items-stretch border-b border-slate-700/80 gap-2 xl:gap-5">
             <div class="flex flex-col justify-center">
-                <h1 class="text-lg sm:text-xl lg:text-2xl font-bold tracking-wider text-blue-400 leading-none">NYCU PT</h1>
-                <h2 class="text-xs sm:text-sm lg:text-lg mt-1 font-medium text-slate-300">心肺見習助理</h2>
+                <h1 class="text-lg sm:text-xl xl:text-2xl font-bold tracking-wider text-blue-400 leading-none">NYCU PT</h1>
+                <h2 class="text-xs sm:text-sm xl:text-lg mt-1 font-medium text-slate-300">心肺見習助理</h2>
             </div>
             
-            <div class="bg-slate-800/80 lg:bg-slate-800 rounded-lg p-2 lg:p-4 border border-slate-600/50 lg:border-slate-600 flex flex-row lg:flex-col items-center justify-between lg:justify-center gap-3 lg:gap-2">
-                <div class="text-xs text-slate-400 hidden lg:block mb-1">見習倒數 ⏱️</div>
-                <div id="timerDisplay" class="text-xl sm:text-2xl lg:text-4xl font-mono text-amber-400 font-bold tracking-wider">60:00</div>
+            <div class="bg-slate-800/80 xl:bg-slate-800 rounded-lg p-2 xl:p-4 border border-slate-600/50 xl:border-slate-600 flex flex-row xl:flex-col items-center justify-between xl:justify-center gap-3 xl:gap-2">
+                <div class="text-xs text-slate-400 hidden xl:block mb-1">見習倒數 ⏱️</div>
+                <div id="timerDisplay" class="text-xl sm:text-2xl xl:text-4xl font-mono text-amber-400 font-bold tracking-wider">60:00</div>
                 <div class="flex gap-2">
-                    <button id="startTimerBtn" class="px-3 py-1 lg:py-1.5 bg-blue-600 hover:bg-blue-500 rounded-md text-xs sm:text-sm font-medium transition-colors">開始</button>
-                    <button id="resetTimerBtn" class="px-3 py-1 lg:py-1.5 bg-slate-600 hover:bg-slate-500 rounded-md text-xs sm:text-sm font-medium transition-colors">重置</button>
+                    <button id="startTimerBtn" class="px-3 py-1 xl:py-1.5 bg-blue-600 hover:bg-blue-500 rounded-md text-xs sm:text-sm font-medium transition-colors">開始</button>
+                    <button id="resetTimerBtn" class="px-3 py-1 xl:py-1.5 bg-slate-600 hover:bg-slate-500 rounded-md text-xs sm:text-sm font-medium transition-colors">重置</button>
                 </div>
             </div>
         </div>
 
-        <nav class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-y-auto hide-scrollbar p-2 sm:p-3 lg:p-4 gap-2 lg:gap-2 bg-slate-800/40 lg:bg-transparent" id="sidebarNav"></nav>
+        <nav class="flex flex-row xl:flex-col overflow-x-auto xl:overflow-y-auto hide-scrollbar p-2 sm:p-3 xl:p-4 gap-2 xl:gap-2 bg-slate-800/40 xl:bg-transparent" id="sidebarNav"></nav>
         
-        <div class="hidden lg:block p-4 border-t border-slate-700 text-xs text-slate-500 text-center mt-auto">國立陽明交通大學 物理治療學系</div>
+        <div class="hidden xl:block p-4 border-t border-slate-700 text-xs text-slate-500 text-center mt-auto">國立陽明交通大學 物理治療學系</div>
     </aside>
 
-    <main class="flex-1 h-full overflow-y-auto bg-slate-50/50 relative hide-scrollbar p-3 sm:p-5 lg:p-8">
+    <main class="flex-1 h-full overflow-y-auto bg-slate-50/50 relative hide-scrollbar p-3 sm:p-5 xl:p-8">
         <div class="max-w-4xl mx-auto pb-24">
 
             <div id="step-0" class="section-view active">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 lg:p-8 mb-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 xl:p-8 mb-6">
                     <div class="flex items-center gap-3 mb-4">
                         <span class="text-2xl sm:text-3xl">📋</span>
                         <h2 class="text-xl sm:text-2xl font-bold text-slate-800">見習基本資料建立</h2>
                     </div>
                     <p class="text-slate-600 text-sm sm:text-base mb-6">請先輸入本次見習的基本資訊以展開流程。</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 xl:gap-5">
                         <div><label class="block text-sm font-medium text-slate-700 mb-1">見習生姓名</label><input type="text" id="studentName" class="w-full rounded-lg border-slate-300 border p-2.5 focus:ring-2 focus:ring-blue-500 outline-none"></div>
                         <div><label class="block text-sm font-medium text-slate-700 mb-1">日期</label><input type="date" id="recordDate" class="w-full rounded-lg border-slate-300 border p-2.5 focus:ring-2 focus:ring-blue-500 outline-none"></div>
                         <div><label class="block text-sm font-medium text-slate-700 mb-1">指導老師 (CI)</label><input type="text" id="ciName" class="w-full rounded-lg border-slate-300 border p-2.5 focus:ring-2 focus:ring-blue-500 outline-none"></div>
@@ -71,25 +72,25 @@
             </div>
 
             <div id="step-1" class="section-view">
-                <div class="mb-4 lg:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-blue-500 pl-3">I. 基本資料與病歷查閱</h2><div class="text-sm text-blue-600 font-medium mt-1">建議時間：10 分鐘</div></div>
-                <div class="space-y-4 lg:space-y-6">
-                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="mb-4 xl:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-blue-500 pl-3">I. 基本資料與病歷查閱</h2><div class="text-sm text-blue-600 font-medium mt-1">建議時間：10 分鐘</div></div>
+                <div class="space-y-4 xl:space-y-6">
+                    <div class="bg-white p-5 xl:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">病患背景</h3>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="flex gap-4">
                                 <div class="w-1/2"><label class="block text-sm text-slate-500 mb-1">年齡</label><input type="number" id="age" class="w-full rounded border p-2.5 bg-slate-50"></div>
                                 <div class="w-1/2"><label class="block text-sm text-slate-500 mb-1">性別</label><select id="gender" class="w-full rounded border p-2.5 bg-slate-50"><option>男</option><option>女</option></select></div>
                             </div>
                             <div><label class="block text-sm text-slate-500 mb-1">主治醫師診斷 (Medical Dx)</label><input type="text" id="medicalDx" class="w-full rounded border p-2.5 bg-slate-50"></div>
-                            <div class="lg:col-span-2"><label class="block text-sm text-slate-500 mb-1">入院主要原因 (Chief Complaint)</label><input type="text" id="chiefComplaint" class="w-full rounded border p-2.5 bg-slate-50"></div>
+                            <div class="md:col-span-2"><label class="block text-sm text-slate-500 mb-1">入院主要原因 (Chief Complaint)</label><input type="text" id="chiefComplaint" class="w-full rounded border p-2.5 bg-slate-50"></div>
                         </div>
                     </div>
-                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-5 xl:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">過去病史 (PHx) <span class="text-xs font-normal text-slate-500 ml-2">點擊選取</span></h3>
                         <div class="flex flex-wrap gap-2" id="phx-toggles"></div>
                         <div class="mt-4"><label class="block text-sm text-slate-500 mb-1">其他/手術史</label><input type="text" id="phxOther" class="w-full rounded border p-2.5 bg-slate-50"></div>
                     </div>
-                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-5 xl:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">檢驗數據 (Lab & Imaging)</h3>
                         <div class="space-y-4">
                             <div><label class="block text-sm font-medium text-slate-700 mb-1">CXR / Chest CT 報告重點</label><textarea id="cxr" class="w-full rounded border p-2.5 bg-slate-50 h-24 outline-none focus:border-blue-400"></textarea></div>
@@ -104,16 +105,16 @@
             </div>
 
             <div id="step-2" class="section-view">
-                <div class="mb-4 lg:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-emerald-500 pl-3">II. 床邊觀察與管線安全</h2><div class="text-sm text-emerald-600 font-medium mt-1">建議時間：5 分鐘</div></div>
-                <div class="space-y-4 lg:space-y-6">
-                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="mb-4 xl:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-emerald-500 pl-3">II. 床邊觀察與管線安全</h2><div class="text-sm text-emerald-600 font-medium mt-1">建議時間：5 分鐘</div></div>
+                <div class="space-y-4 xl:space-y-6">
+                    <div class="bg-white p-5 xl:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">意識狀態 (Consciousness)</h3>
                         <div class="flex flex-wrap gap-2" id="cons-toggles"></div>
                     </div>
-                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-5 xl:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">氧氣與呼吸設備 (O2 Therapy)</h3>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                            <div class="flex flex-wrap lg:flex-col gap-2" id="o2-toggles"></div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="flex flex-wrap gap-2" id="o2-toggles"></div>
                             <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
                                 <h4 class="text-sm font-semibold text-slate-600 mb-3">設備參數紀錄</h4>
                                 <div class="space-y-3">
@@ -124,7 +125,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-amber-200 relative overflow-hidden">
+                    <div class="bg-white p-5 xl:p-6 rounded-xl shadow-sm border border-amber-200 relative overflow-hidden">
                         <div class="absolute top-0 right-0 bg-amber-500 text-white text-[10px] sm:text-xs px-3 py-1 font-bold rounded-bl-lg">Safety Check</div>
                         <h3 class="text-lg font-semibold text-amber-900 mb-4 border-b border-amber-200 pb-2">身上管線 (Lines & Tubes)</h3>
                         <div class="flex flex-wrap gap-2" id="lines-toggles"></div>
@@ -137,9 +138,9 @@
             </div>
 
             <div id="step-3" class="section-view">
-                <div class="mb-4 lg:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-indigo-500 pl-3">III. 心肺理學檢查 (PE)</h2><div class="text-sm text-indigo-600 font-medium mt-1">建議時間：15 分鐘</div></div>
-                <div class="space-y-4 lg:space-y-6">
-                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="mb-4 xl:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-indigo-500 pl-3">III. 心肺理學檢查 (PE)</h2><div class="text-sm text-indigo-600 font-medium mt-1">建議時間：15 分鐘</div></div>
+                <div class="space-y-4 xl:space-y-6">
+                    <div class="bg-white p-5 xl:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2"><span class="text-xl">👀</span> 1. 視診</h3>
                         <div class="space-y-5">
                             <div><label class="block text-sm text-slate-500 mb-2">外觀特徵</label><div class="flex flex-wrap gap-2" id="inspect-looks"></div></div>
@@ -150,9 +151,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-5 xl:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2"><span class="text-xl">🩺</span> 2. 聽診與咳痰</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                             <div class="bg-blue-50/40 p-4 rounded-lg border border-blue-100"><h4 class="font-medium text-blue-900 mb-3 border-b border-blue-200 pb-1">右肺 (R't) 呼吸音</h4><div class="flex flex-wrap gap-2" id="aus-right"></div></div>
                             <div class="bg-blue-50/40 p-4 rounded-lg border border-blue-100"><h4 class="font-medium text-blue-900 mb-3 border-b border-blue-200 pb-1">左肺 (L't) 呼吸音</h4><div class="flex flex-wrap gap-2" id="aus-left"></div></div>
                         </div>
@@ -161,7 +162,7 @@
                             <div><label class="block text-sm text-slate-500 mb-2">痰液狀況</label><input type="text" id="sputum" class="w-full rounded border p-2.5 bg-slate-50 outline-none" placeholder="量 / 顏色 / 質地"></div>
                         </div>
                     </div>
-                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-5 xl:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2"><span class="text-xl">🖐️</span> 3. 觸診</h3>
                         <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-4"><label class="text-sm font-medium text-slate-700">水腫 (Edema)</label><div class="flex gap-2" id="edema-toggle"></div></div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -177,7 +178,7 @@
             </div>
 
             <div id="step-4" class="section-view">
-                <div class="mb-4 lg:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-rose-500 pl-3">IV. 活動與運動反應</h2><div class="text-sm text-rose-600 font-medium mt-1">建議時間：20 分鐘</div></div>
+                <div class="mb-4 xl:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-rose-500 pl-3">IV. 活動與運動反應</h2><div class="text-sm text-rose-600 font-medium mt-1">建議時間：20 分鐘</div></div>
                 <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
                     <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">生命徵象 (Vital Signs)</h3>
                     <div class="overflow-x-auto pb-2 -mx-4 sm:mx-0 px-4 sm:px-0">
@@ -209,8 +210,8 @@
             </div>
 
             <div id="step-5" class="section-view">
-                <div class="mb-4 lg:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-purple-500 pl-3">V. 臨床推理與見習心得</h2><div class="text-sm text-purple-600 font-medium mt-1">建議時間：10 分鐘</div></div>
-                <div class="space-y-5 lg:space-y-6">
+                <div class="mb-4 xl:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-purple-500 pl-3">V. 臨床推理與見習心得</h2><div class="text-sm text-purple-600 font-medium mt-1">建議時間：10 分鐘</div></div>
+                <div class="space-y-5 xl:space-y-6">
                     <div class="bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-3">1. 物理治療問題 (PT Problems)</h3>
                         <textarea id="ptProblems" class="w-full rounded-lg border border-slate-300 p-3 h-32 outline-none focus:ring-2 focus:ring-purple-400 bg-slate-50 leading-relaxed"></textarea>
@@ -275,10 +276,10 @@
             const nav = document.getElementById('sidebarNav');
             stepsData.forEach(step => {
                 const div = document.createElement('div');
-                div.className = `p-2 sm:p-3 lg:mb-2 rounded-lg cursor-pointer transition-all flex items-center justify-between border border-transparent flex-shrink-0 whitespace-nowrap gap-3 lg:gap-4 ${step.id === 0 ? 'bg-blue-800 border-blue-500 shadow-sm' : 'hover:bg-slate-700/80'}`;
+                div.className = `p-2 sm:p-3 xl:mb-2 rounded-lg cursor-pointer transition-all flex items-center justify-between border border-transparent flex-shrink-0 whitespace-nowrap gap-3 xl:gap-4 ${step.id === 0 ? 'bg-blue-800 border-blue-500 shadow-sm' : 'hover:bg-slate-700/80'}`;
                 div.onclick = () => goToStep(step.id);
                 div.id = `nav-step-${step.id}`;
-                div.innerHTML = `<div class="flex items-center gap-2 lg:gap-3"><span class="text-xl lg:text-2xl">${step.icon}</span><span class="font-medium text-sm sm:text-base">${step.title}</span></div><span class="text-xs text-slate-300 font-mono bg-slate-900/50 px-1.5 py-0.5 rounded hidden lg:block">${step.time}</span>`;
+                div.innerHTML = `<div class="flex items-center gap-2 xl:gap-3"><span class="text-xl xl:text-2xl">${step.icon}</span><span class="font-medium text-sm sm:text-base">${step.title}</span></div><span class="text-xs text-slate-300 font-mono bg-slate-900/50 px-1.5 py-0.5 rounded hidden xl:block">${step.time}</span>`;
                 nav.appendChild(div);
             });
         }
@@ -357,8 +358,8 @@
                 if (idx == stepIndex) { 
                     el.classList.add('bg-blue-800', 'border-blue-500', 'shadow-sm'); 
                     el.classList.remove('hover:bg-slate-700/80'); 
-                    // 滑動置中邏輯
-                    if(window.innerWidth < 1024) {
+                    // 當畫面寬度小於 1280px (手機平板) 時，確保選單可以置中滑動
+                    if(window.innerWidth < 1280) {
                         const scrollLeft = el.offsetLeft - (nav.offsetWidth / 2) + (el.offsetWidth / 2);
                         nav.scrollTo({ left: scrollLeft, behavior: 'smooth' });
                     }
@@ -417,12 +418,12 @@
                 sections.forEach(sec => sec.style.display = 'block'); navBtns.forEach(b => b.style.display = 'none'); btn.style.display = 'none';
                 const studentName = document.getElementById('studentName').value || '未命名'; const date = document.getElementById('recordDate').value || '未填寫日期';
                 
-                // 平板匯出優化：確保視窗寬度捕捉正確
+                // 為了匯出漂亮完美的 PDF 畫面，強制設定渲染視窗寬度為 1280px (電腦版排版)
                 html2pdf().set({ 
                     margin: 10, 
                     filename: `見習紀錄_${studentName}_${date}.pdf`, 
                     image: { type: 'jpeg', quality: 0.98 }, 
-                    html2canvas: { scale: 2, useCORS: true, windowWidth: 1024 }, 
+                    html2canvas: { scale: 2, useCORS: true, windowWidth: 1280 }, 
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
                 }).from(container).save().then(() => {
                     sections.forEach(sec => sec.style.display = ''); navBtns.forEach(b => b.style.display = ''); btn.style.display = 'flex'; btn.innerHTML = originalText; btn.disabled = false;
@@ -485,4 +486,4 @@
         };
     </script>
 </body>
-</html>
+</html>.
