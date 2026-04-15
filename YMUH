@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心肺物理治療見習數位助理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 40vh; max-height: 400px; min-height: 250px; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .toggle-btn.active { background-color: #2563eb; color: white; border-color: #2563eb; }
+        .section-view { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .section-view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="text-slate-800 antialiased h-screen flex flex-col md:flex-row overflow-hidden">
+
+    <aside class="w-full md:w-80 bg-slate-900 text-white flex flex-col shadow-xl z-20 h-auto md:h-full flex-shrink-0">
+        <div class="p-6 border-b border-slate-700">
+            <h1 class="text-xl font-bold tracking-wider text-blue-400">NYCU PT</h1>
+            <h2 class="text-lg mt-1 font-medium">心肺見習數位助理</h2>
+            <div class="mt-4 bg-slate-800 rounded-lg p-4 text-center border border-slate-600">
+                <div class="text-sm text-slate-400 mb-1">見習倒數計時 ⏱️</div>
+                <div id="timerDisplay" class="text-3xl font-mono text-amber-400">60:00</div>
+                <div class="mt-2 flex justify-center gap-2">
+                    <button id="startTimerBtn" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm transition-colors">開始</button>
+                    <button id="resetTimerBtn" class="px-3 py-1 bg-slate-600 hover:bg-slate-500 rounded text-sm transition-colors">重置</button>
+                </div>
+            </div>
+        </div>
+        <nav class="flex-1 overflow-y-auto hide-scrollbar p-4" id="sidebarNav"></nav>
+        <div class="p-4 border-t border-slate-700 text-xs text-slate-500 text-center">國立陽明交通大學 物理治療學系</div>
+    </aside>
+
+    <main class="flex-1 h-full overflow-y-auto bg-slate-50 relative hide-scrollbar p-4 md:p-8">
+        <div class="max-w-4xl mx-auto pb-24">
+
+            <!-- Step 0: 基本資料 -->
+            <div id="step-0" class="section-view active">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 mb-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-3xl">📋</span>
+                        <h2 class="text-2xl font-bold text-slate-800">見習基本資料建立</h2>
+                    </div>
+                    <p class="text-slate-600 mb-6 leading-relaxed">請先輸入本次見習的基本資訊以展開流程。</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">見習生姓名</label><input type="text" id="studentName" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">日期</label><input type="date" id="recordDate" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">指導老師 (CI)</label><input type="text" id="ciName" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">病房/床號</label><input type="text" id="bedNo" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                    </div>
+                    <div class="mt-8 flex justify-end"><button class="nav-next-btn px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md font-medium" data-target="1">開始病歷查閱 ➔</button></div>
+                </div>
+            </div>
+
+            <!-- Step 1: 病歷查閱 -->
+            <div id="step-1" class="section-view">
+                <div class="mb-6"><h2 class="text-2xl font-bold text-slate-800 border-l-4 border-blue-500 pl-3">I. 基本資料與病歷查閱</h2><div class="text-sm text-blue-600 font-medium mt-1">建議時間：10 分鐘</div></div>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">病患背景</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex gap-4">
+                                <div class="w-1/2"><label class="block text-sm text-slate-500 mb-1">年齡</label><input type="number" id="age" class="w-full rounded border p-2 bg-slate-50"></div>
+                                <div class="w-1/2"><label class="block text-sm text-slate-500 mb-1">性別</label><select id="gender" class="w-full rounded border p-2 bg-slate-50"><option>男</option><option>女</option></select></div>
+                            </div>
+                            <div><label class="block text-sm text-slate-500 mb-1">主治醫師診斷 (Medical Dx)</label><input type="text" id="medicalDx" class="w-full rounded border p-2 bg-slate-50"></div>
+                            <div class="md:col-span-2"><label class="block text-sm text-slate-500 mb-1">入院主要原因 (Chief Complaint)</label><input type="text" id="chiefComplaint" class="w-full rounded border p-2 bg-slate-50"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">過去病史 (PHx) <span class="text-xs font-normal text-slate-500 ml-2">點擊選取</span></h3>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-2" id="phx-toggles"></div>
+                        <div class="mt-4"><label class="block text-sm text-slate-500 mb-1">其他/手術史</label><input type="text" id="phxOther" class="w-full rounded border p-2 bg-slate-50"></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">檢驗數據 (Lab & Imaging)</h3>
+                        <div class="space-y-4">
+                            <div><label class="block text-sm font-medium text-slate-700 mb-1">CXR / Chest CT 報告重點</label><textarea id="cxr" class="w-full rounded border p-2 bg-slate-50 h-20 outline-none focus:border-blue-400"></textarea></div>
+                            <div><label class="block text-sm font-medium text-slate-700 mb-1">異常抽血數據 (與活動風險相關者)</label><textarea id="labData" class="w-full rounded border p-2 bg-slate-50 h-20 outline-none focus:border-blue-400"></textarea></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-between"><button class="nav-prev-btn px-6 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition" data-target="0">⬅ 上一步</button><button class="nav-next-btn px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md" data-target="2">進入病房觀察 ➔</button></div>
+            </div>
+
+            <!-- Step 2: 床邊觀察 -->
+            <div id="step-2" class="section-view">
+                <div class="mb-6"><h2 class="text-2xl font-bold text-slate-800 border-l-4 border-emerald-500 pl-3">II. 床邊觀察與管線安全</h2><div class="text-sm text-emerald-600 font-medium mt-1">建議時間：5 分鐘</div></div>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">意識狀態 (Consciousness)</h3>
+                        <div class="flex flex-wrap gap-2" id="cons-toggles"></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">氧氣與呼吸設備 (O2 Therapy)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-2" id="o2-toggles"></div>
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                <h4 class="text-sm font-semibold text-slate-600 mb-2">設備參數紀錄</h4>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2"><span class="text-sm w-20">Flow/L:</span><input type="text" id="o2Flow" class="w-full rounded border p-1 text-sm"></div>
+                                    <div class="flex items-center gap-2"><span class="text-sm w-20">FiO2 %:</span><input type="text" id="o2Fio2" class="w-full rounded border p-1 text-sm"></div>
+                                    <div class="flex items-center gap-2"><span class="text-sm w-20">Vent Mode:</span><input type="text" id="o2VentMode" class="w-full rounded border p-1 text-sm"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-amber-200 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-amber-500 text-white text-xs px-3 py-1 font-bold rounded-bl-lg">Safety Check</div>
+                        <h3 class="text-lg font-semibold text-amber-900 mb-4 border-b border-amber-200 pb-2">身上管線 (Lines & Tubes)</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2" id="lines-toggles"></div>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-between"><button class="nav-prev-btn px-6 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition" data-target="1">⬅ 上一步</button><button class="nav-next-btn px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md" data-target="3">執行理學檢查 ➔</button></div>
+            </div>
+
+            <!-- Step 3: 理學檢查 -->
+            <div id="step-3" class="section-view">
+                <div class="mb-6"><h2 class="text-2xl font-bold text-slate-800 border-l-4 border-indigo-500 pl-3">III. 心肺理學檢查 (PE)</h2><div class="text-sm text-indigo-600 font-medium mt-1">建議時間：15 分鐘</div></div>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2"><span class="text-xl">👀</span> 1. 視診 (Inspection)</h3>
+                        <div class="space-y-4">
+                            <div><label class="block text-sm text-slate-500 mb-2">外觀特徵</label><div class="flex flex-wrap gap-2" id="inspect-looks"></div></div>
+                            <div><label class="block text-sm text-slate-500 mb-2">呼吸型態</label><div class="flex flex-wrap gap-2" id="inspect-pattern"></div></div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-3 bg-slate-50 rounded-lg border"><label class="block text-sm text-slate-700 mb-2 font-medium">呼吸動作異常</label><div class="flex flex-col gap-2" id="inspect-motion"></div></div>
+                                <div class="p-3 bg-slate-50 rounded-lg border"><label class="block text-sm text-slate-700 mb-2 font-medium">胸廓擴張對稱性</label><div class="flex flex-wrap gap-2" id="inspect-chest"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2"><span class="text-xl">🩺</span> 2. 聽診與咳痰 (Auscultation & Cough)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="bg-blue-50/50 p-4 rounded-lg border border-blue-100"><h4 class="font-medium text-blue-900 mb-3 border-b border-blue-200 pb-1">右肺 (R't) 呼吸音</h4><div class="flex flex-col gap-2" id="aus-right"></div></div>
+                            <div class="bg-blue-50/50 p-4 rounded-lg border border-blue-100"><h4 class="font-medium text-blue-900 mb-3 border-b border-blue-200 pb-1">左肺 (L't) 呼吸音</h4><div class="flex flex-col gap-2" id="aus-left"></div></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
+                            <div><label class="block text-sm text-slate-500 mb-2">咳嗽能力</label><div class="flex flex-wrap gap-2" id="cough-ability"></div></div>
+                            <div><label class="block text-sm text-slate-500 mb-2">痰液狀況 (量 / 顏色)</label><input type="text" id="sputum" class="w-full rounded border p-2 bg-slate-50"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2"><span class="text-xl">🖐️</span> 3. 觸診 (Palpation)</h3>
+                        <div class="flex items-center gap-4"><label class="block text-sm font-medium text-slate-700">水腫 (Edema)</label><div class="flex gap-2" id="edema-toggle"></div></div>
+                        <div class="mt-3 grid grid-cols-2 gap-4">
+                            <input type="text" id="edemaSite" class="w-full rounded border p-2 bg-slate-50 text-sm" placeholder="部位 (例如：雙下肢)">
+                            <select id="edemaScale" class="w-full rounded border p-2 bg-slate-50 text-sm"><option value="">選擇 Pitting scale...</option><option>1+ (輕微)</option><option>2+ (中度)</option><option>3+ (重度)</option><option>4+ (極重度)</option></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-between"><button class="nav-prev-btn px-6 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition" data-target="2">⬅ 上一步</button><button class="nav-next-btn px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md" data-target="4">進入活動測試 ➔</button></div>
+            </div>
+
+            <!-- Step 4: 活動與運動反應 -->
+            <div id="step-4" class="section-view">
+                <div class="mb-6"><h2 class="text-2xl font-bold text-slate-800 border-l-4 border-rose-500 pl-3">IV. 活動與運動反應</h2><div class="text-sm text-rose-600 font-medium mt-1">建議時間：20 分鐘</div></div>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">生命徵象動態紀錄 (Vital Signs)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 text-slate-600 text-sm border-b"><th class="p-3 font-medium">項目</th><th class="p-3 font-medium">休息時</th><th class="p-3 font-medium">活動時</th><th class="p-3 font-medium">休息5分後</th></tr></thead>
+                            <tbody class="text-sm text-slate-800" id="vitals-inputs"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200 mb-6">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-2">生理反應趨勢分析</h3>
+                    <div class="chart-container"><canvas id="vitalsChart"></canvas></div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
+                    <div>
+                        <h3 class="text-md font-semibold text-slate-800 mb-3">最高活動能力 (Highest Mobility Achieved)</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2" id="mobility-toggles"></div>
+                        <div class="mt-3 flex items-center gap-2"><span class="text-sm text-slate-600">行走距離：</span><input type="number" id="walkDistance" class="w-24 rounded border p-1 text-center" placeholder="公尺"></div>
+                    </div>
+                    <div class="border-t pt-4">
+                        <h3 class="text-md font-semibold text-slate-800 mb-3">病患依賴程度 (Dependency)</h3>
+                        <div class="flex flex-wrap gap-2" id="depend-toggles"></div>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-between"><button class="nav-prev-btn px-6 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition" data-target="3">⬅ 上一步</button><button class="nav-next-btn px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md" data-target="5">撰寫臨床推理 ➔</button></div>
+            </div>
+
+            <!-- Step 5: 臨床推理 -->
+            <div id="step-5" class="section-view">
+                <div class="mb-6"><h2 class="text-2xl font-bold text-slate-800 border-l-4 border-purple-500 pl-3">V. 臨床推理與見習心得</h2><div class="text-sm text-purple-600 font-medium mt-1">建議時間：10 分鐘</div></div>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-2">1. 判斷物理治療問題 (PT Problems/Impairments)</h3>
+                        <textarea id="ptProblems" class="w-full rounded-lg border border-slate-300 p-3 h-32 outline-none focus:ring-2 focus:ring-purple-400 bg-slate-50"></textarea>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-2">2. 向指導老師 (CI) 提問</h3>
+                        <textarea id="ciQuestion" class="w-full rounded-lg border border-slate-300 p-3 h-32 outline-none focus:ring-2 focus:ring-purple-400 bg-slate-50"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-6 bg-blue-900 text-white rounded-xl text-center shadow-lg">
+                    <h3 class="text-xl font-bold mb-2">見習紀錄完成</h3>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4 mt-4">
+                        <button id="exportPdfBtn" class="px-8 py-3 bg-white text-blue-900 font-bold rounded-lg hover:bg-slate-100 transition shadow flex items-center justify-center gap-2">📥 匯出 PDF 紀錄表</button>
+                        <button id="submitCloudBtn" class="px-8 py-3 bg-emerald-500 text-white font-bold rounded-lg hover:bg-emerald-600 transition shadow flex items-center justify-center gap-2">☁️ 送出至老師後台</button>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-start"><button class="nav-prev-btn px-6 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition" data-target="4">⬅ 返回修改數據</button></div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const stepsData = [
+            { id: 0, title: "基本資料", icon: "👤", time: "" },
+            { id: 1, title: "I. 病歷查閱", icon: "📄", time: "10m" },
+            { id: 2, title: "II. 床邊觀察", icon: "🛏️", time: "5m" },
+            { id: 3, title: "III. 理學檢查", icon: "🩺", time: "15m" },
+            { id: 4, title: "IV. 活動反應", icon: "🏃", time: "20m" },
+            { id: 5, title: "V. 臨床推理", icon: "🧠", time: "10m" }
+        ];
+
+        const optionData = {
+            phx: ['HTN 高血壓', 'DM 糖尿病', 'CAD 冠心病', 'Arrhythmia 心律不整', 'CHF 心衰竭', 'COPD 慢性肺阻塞疾病', 'Asthma 氣喘', 'CVA 中風', 'CKD/ESRD 腎病', 'Cancer 癌症'],
+            cons: ['Clear', 'Drowsy', 'Stupor', 'Coma', 'Sedated'],
+            o2: ['Room Air (未戴氧氣)', 'Nasal Cannula', 'Simple Mask', 'Venturi Mask', 'Non-rebreathing Mask', 'High Flow NC', 'BiPAP/CPAP', 'Endo/Tracheostomy'],
+            lines: ['Peripheral IV', 'CVC', 'A-line', 'Foley (尿管)', 'N-G tube (鼻胃管)', 'Chest Tube (胸管)', 'Jackson-Pratt/Hemovac', 'EKG monitor', 'Pacemaker (節律器)'],
+            inspectLooks: ['Cyanosis (發紺)', 'Clubbing finger (杵狀指)', 'JVD (頸靜脈怒張)'],
+            inspectPattern: ['Normal', 'Dyspnea/SOB', 'Tachypnea', 'Apnea', 'Orthopnea (端坐呼吸)'],
+            inspectMotion: ['呼吸輔助肌使用(3C1D or 1N2C1D)', '胸腹不協調呼吸 (Paradoxical)'],
+            inspectChest: ['對稱', '偏弱: 右 (R\'t)', '偏弱: 左 (L\'t)'],
+            auscultation: ['Normal', 'Decreased', 'Crackles', 'Wheezes'],
+            cough: ['Functional (有效)', 'Weak Functional (無力)', 'Non-functional', 'NA'],
+            edema: ['無', '有'],
+            mobility: ['床上翻身/坐起', '床邊坐姿', '轉位至輪椅', '站立 (Standing)', '行走 (Ambulation)'],
+            depend: ['Independent', 'Supervision', 'Min Assist', 'Mod Assist', 'Max Assist']
+        };
+
+        const vitalsFields = [
+            { id: 'hr', label: '心跳 (HR, bpm)' },
+            { id: 'rr', label: '呼吸頻率 (RR, rpm)' },
+            { id: 'spo2', label: '血氧 (SpO2, %)' },
+            { id: 'borg', label: '喘/費力 (Borg/RPE)' }
+        ];
+
+        let currentStep = 0;
+        let vitalsChartInstance = null;
+
+        function initSidebar() {
+            const nav = document.getElementById('sidebarNav');
+            stepsData.forEach(step => {
+                const div = document.createElement('div');
+                div.className = `p-3 mb-2 rounded-lg cursor-pointer transition-all flex items-center justify-between border border-transparent ${step.id === 0 ? 'bg-blue-800 border-blue-600' : 'hover:bg-slate-800'}`;
+                div.onclick = () => goToStep(step.id);
+                div.id = `nav-step-${step.id}`;
+                div.innerHTML = `<div class="flex items-center gap-3"><span class="text-xl">${step.icon}</span><span class="font-medium">${step.title}</span></div><span class="text-xs text-slate-400 font-mono bg-slate-800 px-1 rounded">${step.time}</span>`;
+                nav.appendChild(div);
+            });
+        }
+
+        function createToggles(containerId, options, isMultiple = true) {
+            const container = document.getElementById(containerId);
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'toggle-btn px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-600 bg-white hover:bg-slate-50 transition-colors text-left';
+                btn.textContent = opt;
+                btn.onclick = (e) => {
+                    if (!isMultiple) { Array.from(container.children).forEach(c => c.classList.remove('active', 'bg-blue-600', 'text-white')); }
+                    btn.classList.toggle('active');
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function initVitalsTable() {
+            const tbody = document.getElementById('vitals-inputs');
+            vitalsFields.forEach(field => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-3 font-medium text-slate-700">${field.label}</td>
+                    <td class="p-2"><input type="text" id="${field.id}-rest" class="w-full border rounded p-1.5 text-center bg-slate-50 focus:bg-white vital-input"></td>
+                    <td class="p-2"><input type="text" id="${field.id}-peak" class="w-full border rounded p-1.5 text-center bg-rose-50 border-rose-200 focus:bg-white vital-input"></td>
+                    <td class="p-2"><input type="text" id="${field.id}-rec" class="w-full border rounded p-1.5 text-center bg-slate-50 focus:bg-white vital-input"></td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.querySelectorAll('.vital-input').forEach(input => { input.addEventListener('input', updateChartData); });
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('vitalsChart').getContext('2d');
+            vitalsChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['休息', '最高值', '恢復'],
+                    datasets: [
+                        { label: '心跳 HR', data: [null, null, null], borderColor: '#ef4444', backgroundColor: '#ef4444', yAxisID: 'y', tension: 0.3, pointRadius: 6 },
+                        { label: '血氧 SpO2', data: [null, null, null], borderColor: '#3b82f6', backgroundColor: '#3b82f6', yAxisID: 'y1', tension: 0.3, pointRadius: 6, borderDash: [5, 5] }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: { type: 'linear', display: true, position: 'left', min: 50, max: 180 },
+                        y1: { type: 'linear', display: true, position: 'right', min: 80, max: 100, grid: { drawOnChartArea: false } }
+                    }
+                }
+            });
+        }
+
+        function updateChartData() {
+            if (!vitalsChartInstance) return;
+            const hrRest = parseFloat(document.getElementById('hr-rest').value) || null;
+            const hrPeak = parseFloat(document.getElementById('hr-peak').value) || null;
+            const hrRec = parseFloat(document.getElementById('hr-rec').value) || null;
+            const spo2Rest = parseFloat(document.getElementById('spo2-rest').value) || null;
+            const spo2Peak = parseFloat(document.getElementById('spo2-peak').value) || null;
+            const spo2Rec = parseFloat(document.getElementById('spo2-rec').value) || null;
+            vitalsChartInstance.data.datasets[0].data = [hrRest, hrPeak, hrRec];
+            vitalsChartInstance.data.datasets[1].data = [spo2Rest, spo2Peak, spo2Rec];
+            vitalsChartInstance.update();
+        }
+
+        function goToStep(stepIndex) {
+            document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${stepIndex}`).classList.add('active');
+            document.querySelectorAll('#sidebarNav > div').forEach((el, idx) => {
+                if (idx == stepIndex) { el.classList.add('bg-blue-800', 'border-blue-600'); el.classList.remove('hover:bg-slate-800'); }
+                else { el.classList.remove('bg-blue-800', 'border-blue-600'); el.classList.add('hover:bg-slate-800'); }
+            });
+            currentStep = parseInt(stepIndex);
+            document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+            if (currentStep === 4 && !vitalsChartInstance) { initChart(); }
+        }
+
+        let timerInterval; let timeLeft = 3600; 
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('timerDisplay').textContent = `${m}:${s}`;
+        }
+        document.getElementById('startTimerBtn').onclick = function() {
+            if (this.textContent === '開始' || this.textContent === '繼續') {
+                this.textContent = '暫停'; this.classList.replace('bg-blue-600', 'bg-amber-600');
+                timerInterval = setInterval(() => { if (timeLeft > 0) { timeLeft--; updateTimerDisplay(); } else { clearInterval(timerInterval); } }, 1000);
+            } else {
+                this.textContent = '繼續'; this.classList.replace('bg-amber-600', 'bg-blue-600'); clearInterval(timerInterval);
+            }
+        };
+        document.getElementById('resetTimerBtn').onclick = function() {
+            clearInterval(timerInterval); timeLeft = 3600; updateTimerDisplay();
+            const startBtn = document.getElementById('startTimerBtn'); startBtn.textContent = '開始'; startBtn.classList.replace('bg-amber-600', 'bg-blue-600');
+        };
+
+        window.onload = () => {
+            initSidebar();
+            createToggles('phx-toggles', optionData.phx); createToggles('cons-toggles', optionData.cons, false);
+            createToggles('o2-toggles', optionData.o2, false); createToggles('lines-toggles', optionData.lines);
+            createToggles('inspect-looks', optionData.inspectLooks); createToggles('inspect-pattern', optionData.inspectPattern, false);
+            createToggles('inspect-motion', optionData.inspectMotion); createToggles('inspect-chest', optionData.inspectChest, false);
+            createToggles('aus-right', optionData.auscultation); createToggles('aus-left', optionData.auscultation);
+            createToggles('cough-ability', optionData.cough, false); createToggles('edema-toggle', optionData.edema, false);
+            createToggles('mobility-toggles', optionData.mobility, false); createToggles('depend-toggles', optionData.depend, false);
+            initVitalsTable();
+
+            document.querySelectorAll('.nav-next-btn, .nav-prev-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => { goToStep(e.target.dataset.target); });
+            });
+
+            // 匯出 PDF
+            document.getElementById('exportPdfBtn').addEventListener('click', function() {
+                const btn = this; const originalText = btn.innerHTML; btn.innerHTML = '⏳ 處理中...'; btn.disabled = true;
+                const container = document.querySelector('.max-w-4xl'); const sections = document.querySelectorAll('.section-view'); const navBtns = document.querySelectorAll('.nav-next-btn, .nav-prev-btn');
+                container.querySelectorAll('input, textarea, select').forEach(input => {
+                    if (input.tagName === 'TEXTAREA') { input.textContent = input.value; }
+                    else if (input.tagName === 'SELECT') { const opt = input.options[input.selectedIndex]; if (opt) { Array.from(input.options).forEach(o => o.removeAttribute('selected')); opt.setAttribute('selected', 'selected'); } }
+                    else { input.setAttribute('value', input.value); }
+                });
+                sections.forEach(sec => sec.style.display = 'block'); navBtns.forEach(b => b.style.display = 'none'); btn.style.display = 'none';
+                const studentName = document.getElementById('studentName').value || '未命名'; const date = document.getElementById('recordDate').value || '未填寫日期';
+                html2pdf().set({ margin: 10, filename: `見習紀錄_${studentName}_${date}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, windowWidth: document.documentElement.offsetWidth }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(container).save().then(() => {
+                    sections.forEach(sec => sec.style.display = ''); navBtns.forEach(b => b.style.display = ''); btn.style.display = 'flex'; btn.innerHTML = originalText; btn.disabled = false;
+                });
+            });
+
+            // 雲端送出 (重構：抓取所有欄位)
+            document.getElementById('submitCloudBtn').addEventListener('click', async function() {
+                const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdiELtcfYhcCmdq5PadgCParpW8jivRS1OTnrFsTRmgsvHkrziJ0CwZiveinadGGy5/exec';
+                const btn = this; const originalText = btn.innerHTML; btn.innerHTML = '⏳ 傳送中...'; btn.disabled = true;
+
+                const getToggles = (id) => { const c = document.getElementById(id); return c ? Array.from(c.querySelectorAll('.active')).map(b => b.textContent).join('、') : ''; };
+
+                const data = {
+                    studentName: document.getElementById('studentName').value,
+                    date: document.getElementById('recordDate').value,
+                    ciName: document.getElementById('ciName').value,
+                    bedNo: document.getElementById('bedNo').value,
+                    age: document.getElementById('age').value,
+                    gender: document.getElementById('gender').value,
+                    medicalDx: document.getElementById('medicalDx').value,
+                    chiefComplaint: document.getElementById('chiefComplaint').value,
+                    phx: getToggles('phx-toggles'),
+                    phxOther: document.getElementById('phxOther').value,
+                    cxr: document.getElementById('cxr').value,
+                    labData: document.getElementById('labData').value,
+                    consciousness: getToggles('cons-toggles'),
+                    o2Therapy: getToggles('o2-toggles'),
+                    o2Flow: document.getElementById('o2Flow').value,
+                    o2Fio2: document.getElementById('o2Fio2').value,
+                    o2VentMode: document.getElementById('o2VentMode').value,
+                    lines: getToggles('lines-toggles'),
+                    inspectLooks: getToggles('inspect-looks'),
+                    inspectPattern: getToggles('inspect-pattern'),
+                    inspectMotion: getToggles('inspect-motion'),
+                    inspectChest: getToggles('inspect-chest'),
+                    ausRight: getToggles('aus-right'),
+                    ausLeft: getToggles('aus-left'),
+                    cough: getToggles('cough-ability'),
+                    sputum: document.getElementById('sputum').value,
+                    edema: getToggles('edema-toggle'),
+                    edemaSite: document.getElementById('edemaSite').value,
+                    edemaScale: document.getElementById('edemaScale').value,
+                    hrRest: document.getElementById('hr-rest').value, hrPeak: document.getElementById('hr-peak').value, hrRec: document.getElementById('hr-rec').value,
+                    rrRest: document.getElementById('rr-rest').value, rrPeak: document.getElementById('rr-peak').value, rrRec: document.getElementById('rr-rec').value,
+                    spo2Rest: document.getElementById('spo2-rest').value, spo2Peak: document.getElementById('spo2-peak').value, spo2Rec: document.getElementById('spo2-rec').value,
+                    borgRest: document.getElementById('borg-rest').value, borgPeak: document.getElementById('borg-peak').value, borgRec: document.getElementById('borg-rec').value,
+                    mobility: getToggles('mobility-toggles'),
+                    walkDistance: document.getElementById('walkDistance').value,
+                    dependency: getToggles('depend-toggles'),
+                    ptProblems: document.getElementById('ptProblems').value,
+                    ciQuestion: document.getElementById('ciQuestion').value
+                };
+
+                try {
+                    const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
+                    const result = await response.json();
+                    if (result.result === 'success') { alert('✅ 完整見習紀錄已送出至老師的後台！'); } else { throw new Error('伺服器錯誤'); }
+                } catch (error) { alert('❌ 送出失敗，請檢查網路。'); } finally { btn.innerHTML = originalText; btn.disabled = false; }
+            });
+        };
+    </script>
+</body>
+</html>.
