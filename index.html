@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>心肺物理治療見習數位助理</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -10,224 +10,226 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
-        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 35vh; max-height: 400px; min-height: 250px; }
+        
+        /* 解決 iOS 100vh 底部被工具列吃掉的問題 */
+        .app-h { height: 100vh; height: 100dvh; }
+        
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin: 0 auto; height: 35vh; min-height: 250px; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .toggle-btn.active { background-color: #2563eb; color: white; border-color: #2563eb; }
-        .section-view { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .toggle-btn.active { background-color: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 2px 4px rgba(37,99,235,0.2); }
+        .section-view { display: none; animation: fadeIn 0.4s ease-out; }
         .section-view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* 避免手機/平板點擊輸入框時畫面自動放大跳動 */
-        input[type="text"], input[type="number"], input[type="date"], textarea, select { font-size: 16px !important; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 強制覆蓋字體大小，避免 iOS Safari 自動放大 */
+        input, textarea, select, button { font-size: 16px !important; }
     </style>
 </head>
-<body class="text-slate-800 antialiased h-[100dvh] flex flex-col md:flex-row overflow-hidden">
+<body class="text-slate-800 antialiased app-h flex flex-col lg:flex-row overflow-hidden">
 
-    <aside class="w-full md:w-56 lg:w-80 bg-slate-900 text-white flex flex-col shadow-xl z-20 flex-shrink-0 transition-all duration-300">
-        <div class="p-3 md:p-4 lg:p-6 border-b border-slate-700 flex flex-row md:flex-col justify-between items-center md:items-stretch gap-2 md:gap-3 lg:gap-4">
-            <div>
-                <h1 class="text-lg md:text-xl font-bold tracking-wider text-blue-400">NYCU PT</h1>
-                <h2 class="text-sm md:text-sm lg:text-lg mt-0 md:mt-1 font-medium hidden md:block">心肺見習數位助理</h2>
-                <h2 class="text-sm mt-0 font-medium md:hidden block">心肺見習助理</h2>
+    <aside class="w-full lg:w-80 bg-slate-900 text-white flex flex-col flex-shrink-0 z-30 shadow-md lg:shadow-xl lg:h-full">
+        <div class="p-3 lg:p-6 flex flex-row lg:flex-col justify-between items-center lg:items-stretch border-b border-slate-700/80 gap-2 lg:gap-5">
+            <div class="flex flex-col justify-center">
+                <h1 class="text-lg sm:text-xl lg:text-2xl font-bold tracking-wider text-blue-400 leading-none">NYCU PT</h1>
+                <h2 class="text-xs sm:text-sm lg:text-lg mt-1 font-medium text-slate-300">心肺見習助理</h2>
             </div>
-            <div class="bg-slate-800 rounded-lg p-2 md:p-3 lg:p-4 text-center border border-slate-600 flex flex-row md:flex-col items-center justify-between md:justify-center gap-3 md:gap-1 lg:gap-0">
-                <div class="text-[10px] lg:text-xs text-slate-400 hidden md:block lg:mb-1">見習倒數 ⏱️</div>
-                <div id="timerDisplay" class="text-xl md:text-2xl lg:text-3xl font-mono text-amber-400 font-bold tracking-wider">60:00</div>
-                <div class="mt-0 md:mt-2 flex justify-center gap-1 lg:gap-2">
-                    <button id="startTimerBtn" class="px-2 py-1 md:px-2 lg:px-3 bg-blue-600 hover:bg-blue-500 rounded text-xs lg:text-sm transition-colors">開始</button>
-                    <button id="resetTimerBtn" class="px-2 py-1 md:px-2 lg:px-3 bg-slate-600 hover:bg-slate-500 rounded text-xs lg:text-sm transition-colors">重置</button>
+            
+            <div class="bg-slate-800/80 lg:bg-slate-800 rounded-lg p-2 lg:p-4 border border-slate-600/50 lg:border-slate-600 flex flex-row lg:flex-col items-center justify-between lg:justify-center gap-3 lg:gap-2">
+                <div class="text-xs text-slate-400 hidden lg:block mb-1">見習倒數 ⏱️</div>
+                <div id="timerDisplay" class="text-xl sm:text-2xl lg:text-4xl font-mono text-amber-400 font-bold tracking-wider">60:00</div>
+                <div class="flex gap-2">
+                    <button id="startTimerBtn" class="px-3 py-1 lg:py-1.5 bg-blue-600 hover:bg-blue-500 rounded-md text-xs sm:text-sm font-medium transition-colors">開始</button>
+                    <button id="resetTimerBtn" class="px-3 py-1 lg:py-1.5 bg-slate-600 hover:bg-slate-500 rounded-md text-xs sm:text-sm font-medium transition-colors">重置</button>
                 </div>
             </div>
         </div>
-        <nav class="flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto hide-scrollbar p-2 md:p-3 lg:p-4 gap-2 md:gap-0" id="sidebarNav"></nav>
-        <div class="hidden lg:block p-4 border-t border-slate-700 text-xs text-slate-500 text-center">國立陽明交通大學 物理治療學系</div>
+
+        <nav class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-y-auto hide-scrollbar p-2 sm:p-3 lg:p-4 gap-2 lg:gap-2 bg-slate-800/40 lg:bg-transparent" id="sidebarNav"></nav>
+        
+        <div class="hidden lg:block p-4 border-t border-slate-700 text-xs text-slate-500 text-center mt-auto">國立陽明交通大學 物理治療學系</div>
     </aside>
 
-    <main class="flex-1 h-full overflow-y-auto bg-slate-50 relative hide-scrollbar p-4 lg:p-8">
+    <main class="flex-1 h-full overflow-y-auto bg-slate-50/50 relative hide-scrollbar p-3 sm:p-5 lg:p-8">
         <div class="max-w-4xl mx-auto pb-24">
 
-            <!-- Step 0 -->
             <div id="step-0" class="section-view active">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-8 mb-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 lg:p-8 mb-6">
                     <div class="flex items-center gap-3 mb-4">
-                        <span class="text-3xl">📋</span>
-                        <h2 class="text-xl md:text-2xl font-bold text-slate-800">見習基本資料建立</h2>
+                        <span class="text-2xl sm:text-3xl">📋</span>
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-800">見習基本資料建立</h2>
                     </div>
-                    <p class="text-slate-600 text-sm md:text-base mb-6 leading-relaxed">請先輸入本次見習的基本資訊以展開流程。</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div><label class="block text-sm font-medium text-slate-700 mb-1">見習生姓名</label><input type="text" id="studentName" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                        <div><label class="block text-sm font-medium text-slate-700 mb-1">日期</label><input type="date" id="recordDate" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                        <div><label class="block text-sm font-medium text-slate-700 mb-1">指導老師 (CI)</label><input type="text" id="ciName" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                        <div><label class="block text-sm font-medium text-slate-700 mb-1">病房/床號</label><input type="text" id="bedNo" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                    <p class="text-slate-600 text-sm sm:text-base mb-6">請先輸入本次見習的基本資訊以展開流程。</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">見習生姓名</label><input type="text" id="studentName" class="w-full rounded-lg border-slate-300 border p-2.5 focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">日期</label><input type="date" id="recordDate" class="w-full rounded-lg border-slate-300 border p-2.5 focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">指導老師 (CI)</label><input type="text" id="ciName" class="w-full rounded-lg border-slate-300 border p-2.5 focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">病房/床號</label><input type="text" id="bedNo" class="w-full rounded-lg border-slate-300 border p-2.5 focus:ring-2 focus:ring-blue-500 outline-none"></div>
                     </div>
-                    <div class="mt-8 flex justify-end"><button class="nav-next-btn w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md font-medium" data-target="1">開始病歷查閱 ➔</button></div>
+                    <div class="mt-8 flex justify-end"><button class="nav-next-btn w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md font-medium text-base" data-target="1">開始病歷查閱 ➔</button></div>
                 </div>
             </div>
 
-            <!-- Step 1 -->
             <div id="step-1" class="section-view">
-                <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-800 border-l-4 border-blue-500 pl-3">I. 基本資料與病歷查閱</h2><div class="text-sm text-blue-600 font-medium mt-1">建議時間：10 分鐘</div></div>
-                <div class="space-y-4 md:space-y-6">
-                    <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="mb-4 lg:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-blue-500 pl-3">I. 基本資料與病歷查閱</h2><div class="text-sm text-blue-600 font-medium mt-1">建議時間：10 分鐘</div></div>
+                <div class="space-y-4 lg:space-y-6">
+                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">病患背景</h3>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div class="flex gap-4">
-                                <div class="w-1/2"><label class="block text-sm text-slate-500 mb-1">年齡</label><input type="number" id="age" class="w-full rounded border p-2 bg-slate-50"></div>
-                                <div class="w-1/2"><label class="block text-sm text-slate-500 mb-1">性別</label><select id="gender" class="w-full rounded border p-2 bg-slate-50"><option>男</option><option>女</option></select></div>
+                                <div class="w-1/2"><label class="block text-sm text-slate-500 mb-1">年齡</label><input type="number" id="age" class="w-full rounded border p-2.5 bg-slate-50"></div>
+                                <div class="w-1/2"><label class="block text-sm text-slate-500 mb-1">性別</label><select id="gender" class="w-full rounded border p-2.5 bg-slate-50"><option>男</option><option>女</option></select></div>
                             </div>
-                            <div><label class="block text-sm text-slate-500 mb-1">主治醫師診斷 (Medical Dx)</label><input type="text" id="medicalDx" class="w-full rounded border p-2 bg-slate-50"></div>
-                            <div class="lg:col-span-2"><label class="block text-sm text-slate-500 mb-1">入院主要原因 (Chief Complaint)</label><input type="text" id="chiefComplaint" class="w-full rounded border p-2 bg-slate-50"></div>
+                            <div><label class="block text-sm text-slate-500 mb-1">主治醫師診斷 (Medical Dx)</label><input type="text" id="medicalDx" class="w-full rounded border p-2.5 bg-slate-50"></div>
+                            <div class="lg:col-span-2"><label class="block text-sm text-slate-500 mb-1">入院主要原因 (Chief Complaint)</label><input type="text" id="chiefComplaint" class="w-full rounded border p-2.5 bg-slate-50"></div>
                         </div>
                     </div>
-                    <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">過去病史 (PHx) <span class="text-xs font-normal text-slate-500 ml-2">點擊選取</span></h3>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2" id="phx-toggles"></div>
-                        <div class="mt-4"><label class="block text-sm text-slate-500 mb-1">其他/手術史</label><input type="text" id="phxOther" class="w-full rounded border p-2 bg-slate-50"></div>
+                        <div class="flex flex-wrap gap-2" id="phx-toggles"></div>
+                        <div class="mt-4"><label class="block text-sm text-slate-500 mb-1">其他/手術史</label><input type="text" id="phxOther" class="w-full rounded border p-2.5 bg-slate-50"></div>
                     </div>
-                    <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">檢驗數據 (Lab & Imaging)</h3>
                         <div class="space-y-4">
-                            <div><label class="block text-sm font-medium text-slate-700 mb-1">CXR / Chest CT 報告重點</label><textarea id="cxr" class="w-full rounded border p-2 bg-slate-50 h-20 outline-none focus:border-blue-400"></textarea></div>
-                            <div><label class="block text-sm font-medium text-slate-700 mb-1">異常抽血數據</label><textarea id="labData" class="w-full rounded border p-2 bg-slate-50 h-20 outline-none focus:border-blue-400"></textarea></div>
+                            <div><label class="block text-sm font-medium text-slate-700 mb-1">CXR / Chest CT 報告重點</label><textarea id="cxr" class="w-full rounded border p-2.5 bg-slate-50 h-24 outline-none focus:border-blue-400"></textarea></div>
+                            <div><label class="block text-sm font-medium text-slate-700 mb-1">異常抽血數據</label><textarea id="labData" class="w-full rounded border p-2.5 bg-slate-50 h-24 outline-none focus:border-blue-400"></textarea></div>
                         </div>
                     </div>
                 </div>
                 <div class="mt-8 flex flex-col-reverse sm:flex-row gap-3 justify-between">
-                    <button class="nav-prev-btn w-full sm:w-auto px-6 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition" data-target="0">⬅ 上一步</button>
-                    <button class="nav-next-btn w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md" data-target="2">進入病房觀察 ➔</button>
+                    <button class="nav-prev-btn w-full sm:w-auto px-6 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition text-base" data-target="0">⬅ 上一步</button>
+                    <button class="nav-next-btn w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md font-medium text-base" data-target="2">進入病房觀察 ➔</button>
                 </div>
             </div>
 
-            <!-- Step 2 -->
             <div id="step-2" class="section-view">
-                <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-800 border-l-4 border-emerald-500 pl-3">II. 床邊觀察與管線安全</h2><div class="text-sm text-emerald-600 font-medium mt-1">建議時間：5 分鐘</div></div>
-                <div class="space-y-4 md:space-y-6">
-                    <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="mb-4 lg:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-emerald-500 pl-3">II. 床邊觀察與管線安全</h2><div class="text-sm text-emerald-600 font-medium mt-1">建議時間：5 分鐘</div></div>
+                <div class="space-y-4 lg:space-y-6">
+                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">意識狀態 (Consciousness)</h3>
                         <div class="flex flex-wrap gap-2" id="cons-toggles"></div>
                     </div>
-                    <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">氧氣與呼吸設備 (O2 Therapy)</h3>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            <div class="flex flex-col gap-2" id="o2-toggles"></div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                            <div class="flex flex-wrap lg:flex-col gap-2" id="o2-toggles"></div>
                             <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                                <h4 class="text-sm font-semibold text-slate-600 mb-2">設備參數紀錄</h4>
+                                <h4 class="text-sm font-semibold text-slate-600 mb-3">設備參數紀錄</h4>
                                 <div class="space-y-3">
-                                    <div class="flex items-center gap-2"><span class="text-sm w-20">Flow/L:</span><input type="text" id="o2Flow" class="w-full rounded border p-2 text-sm bg-white"></div>
-                                    <div class="flex items-center gap-2"><span class="text-sm w-20">FiO2 %:</span><input type="text" id="o2Fio2" class="w-full rounded border p-2 text-sm bg-white"></div>
-                                    <div class="flex items-center gap-2"><span class="text-sm w-20">Vent Mode:</span><input type="text" id="o2VentMode" class="w-full rounded border p-2 text-sm bg-white"></div>
+                                    <div class="flex items-center gap-2"><span class="text-sm w-20 flex-shrink-0">Flow/L:</span><input type="text" id="o2Flow" class="w-full rounded border p-2 bg-white outline-none"></div>
+                                    <div class="flex items-center gap-2"><span class="text-sm w-20 flex-shrink-0">FiO2 %:</span><input type="text" id="o2Fio2" class="w-full rounded border p-2 bg-white outline-none"></div>
+                                    <div class="flex items-center gap-2"><span class="text-sm w-20 flex-shrink-0">Vent Mode:</span><input type="text" id="o2VentMode" class="w-full rounded border p-2 bg-white outline-none"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-amber-200 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-amber-500 text-white text-[10px] md:text-xs px-2 py-1 font-bold rounded-bl-lg">Safety</div>
+                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-amber-200 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-amber-500 text-white text-[10px] sm:text-xs px-3 py-1 font-bold rounded-bl-lg">Safety Check</div>
                         <h3 class="text-lg font-semibold text-amber-900 mb-4 border-b border-amber-200 pb-2">身上管線 (Lines & Tubes)</h3>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2" id="lines-toggles"></div>
+                        <div class="flex flex-wrap gap-2" id="lines-toggles"></div>
                     </div>
                 </div>
                 <div class="mt-8 flex flex-col-reverse sm:flex-row gap-3 justify-between">
-                    <button class="nav-prev-btn w-full sm:w-auto px-6 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition" data-target="1">⬅ 上一步</button>
-                    <button class="nav-next-btn w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md" data-target="3">執行理學檢查 ➔</button>
+                    <button class="nav-prev-btn w-full sm:w-auto px-6 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition text-base" data-target="1">⬅ 上一步</button>
+                    <button class="nav-next-btn w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md font-medium text-base" data-target="3">執行理學檢查 ➔</button>
                 </div>
             </div>
 
-            <!-- Step 3 -->
             <div id="step-3" class="section-view">
-                <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-800 border-l-4 border-indigo-500 pl-3">III. 心肺理學檢查 (PE)</h2><div class="text-sm text-indigo-600 font-medium mt-1">建議時間：15 分鐘</div></div>
-                <div class="space-y-4 md:space-y-6">
-                    <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="mb-4 lg:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-indigo-500 pl-3">III. 心肺理學檢查 (PE)</h2><div class="text-sm text-indigo-600 font-medium mt-1">建議時間：15 分鐘</div></div>
+                <div class="space-y-4 lg:space-y-6">
+                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2"><span class="text-xl">👀</span> 1. 視診</h3>
-                        <div class="space-y-4">
+                        <div class="space-y-5">
                             <div><label class="block text-sm text-slate-500 mb-2">外觀特徵</label><div class="flex flex-wrap gap-2" id="inspect-looks"></div></div>
                             <div><label class="block text-sm text-slate-500 mb-2">呼吸型態</label><div class="flex flex-wrap gap-2" id="inspect-pattern"></div></div>
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                <div class="p-3 bg-slate-50 rounded-lg border"><label class="block text-sm text-slate-700 mb-2 font-medium">呼吸動作異常</label><div class="flex flex-col gap-2" id="inspect-motion"></div></div>
-                                <div class="p-3 bg-slate-50 rounded-lg border"><label class="block text-sm text-slate-700 mb-2 font-medium">胸廓擴張對稱性</label><div class="flex flex-wrap gap-2" id="inspect-chest"></div></div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-4 bg-slate-50 rounded-lg border border-slate-200"><label class="block text-sm text-slate-700 mb-3 font-medium">呼吸動作異常</label><div class="flex flex-wrap gap-2" id="inspect-motion"></div></div>
+                                <div class="p-4 bg-slate-50 rounded-lg border border-slate-200"><label class="block text-sm text-slate-700 mb-3 font-medium">胸廓擴張對稱性</label><div class="flex flex-wrap gap-2" id="inspect-chest"></div></div>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2"><span class="text-xl">🩺</span> 2. 聽診與咳痰</h3>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-                            <div class="bg-blue-50/50 p-4 rounded-lg border border-blue-100"><h4 class="font-medium text-blue-900 mb-3 border-b border-blue-200 pb-1">右肺 (R't) 呼吸音</h4><div class="flex flex-col gap-2" id="aus-right"></div></div>
-                            <div class="bg-blue-50/50 p-4 rounded-lg border border-blue-100"><h4 class="font-medium text-blue-900 mb-3 border-b border-blue-200 pb-1">左肺 (L't) 呼吸音</h4><div class="flex flex-col gap-2" id="aus-left"></div></div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                            <div class="bg-blue-50/40 p-4 rounded-lg border border-blue-100"><h4 class="font-medium text-blue-900 mb-3 border-b border-blue-200 pb-1">右肺 (R't) 呼吸音</h4><div class="flex flex-wrap gap-2" id="aus-right"></div></div>
+                            <div class="bg-blue-50/40 p-4 rounded-lg border border-blue-100"><h4 class="font-medium text-blue-900 mb-3 border-b border-blue-200 pb-1">左肺 (L't) 呼吸音</h4><div class="flex flex-wrap gap-2" id="aus-left"></div></div>
                         </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 border-t pt-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 border-t pt-5">
                             <div><label class="block text-sm text-slate-500 mb-2">咳嗽能力</label><div class="flex flex-wrap gap-2" id="cough-ability"></div></div>
-                            <div><label class="block text-sm text-slate-500 mb-2">痰液狀況</label><input type="text" id="sputum" class="w-full rounded border p-2 bg-slate-50" placeholder="量 / 顏色"></div>
+                            <div><label class="block text-sm text-slate-500 mb-2">痰液狀況</label><input type="text" id="sputum" class="w-full rounded border p-2.5 bg-slate-50 outline-none" placeholder="量 / 顏色 / 質地"></div>
                         </div>
                     </div>
-                    <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-5 lg:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2"><span class="text-xl">🖐️</span> 3. 觸診</h3>
-                        <div class="flex items-center gap-4"><label class="block text-sm font-medium text-slate-700">水腫 (Edema)</label><div class="flex gap-2" id="edema-toggle"></div></div>
-                        <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <input type="text" id="edemaSite" class="w-full rounded border p-2 bg-slate-50 text-sm" placeholder="部位 (如：雙下肢)">
-                            <select id="edemaScale" class="w-full rounded border p-2 bg-slate-50 text-sm"><option value="">選擇 Pitting scale...</option><option>1+ (輕微)</option><option>2+ (中度)</option><option>3+ (重度)</option><option>4+ (極重度)</option></select>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-4"><label class="text-sm font-medium text-slate-700">水腫 (Edema)</label><div class="flex gap-2" id="edema-toggle"></div></div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <input type="text" id="edemaSite" class="w-full rounded border p-2.5 bg-slate-50 outline-none" placeholder="水腫部位 (如：雙下肢)">
+                            <select id="edemaScale" class="w-full rounded border p-2.5 bg-slate-50 outline-none"><option value="">選擇 Pitting scale...</option><option>1+ (輕微)</option><option>2+ (中度)</option><option>3+ (重度)</option><option>4+ (極重度)</option></select>
                         </div>
                     </div>
                 </div>
                 <div class="mt-8 flex flex-col-reverse sm:flex-row gap-3 justify-between">
-                    <button class="nav-prev-btn w-full sm:w-auto px-6 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition" data-target="2">⬅ 上一步</button>
-                    <button class="nav-next-btn w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md" data-target="4">進入活動測試 ➔</button>
+                    <button class="nav-prev-btn w-full sm:w-auto px-6 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition text-base" data-target="2">⬅ 上一步</button>
+                    <button class="nav-next-btn w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md font-medium text-base" data-target="4">進入活動測試 ➔</button>
                 </div>
             </div>
 
-            <!-- Step 4 -->
             <div id="step-4" class="section-view">
-                <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-800 border-l-4 border-rose-500 pl-3">IV. 活動與運動反應</h2><div class="text-sm text-rose-600 font-medium mt-1">建議時間：20 分鐘</div></div>
-                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+                <div class="mb-4 lg:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-rose-500 pl-3">IV. 活動與運動反應</h2><div class="text-sm text-rose-600 font-medium mt-1">建議時間：20 分鐘</div></div>
+                <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
                     <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">生命徵象 (Vital Signs)</h3>
-                    <div class="overflow-x-auto pb-2">
-                        <table class="w-full text-left border-collapse min-w-[450px]">
-                            <thead><tr class="bg-slate-50 text-slate-600 text-sm border-b"><th class="p-2 lg:p-3 font-medium whitespace-nowrap">項目</th><th class="p-2 lg:p-3 font-medium">休息時</th><th class="p-2 lg:p-3 font-medium">活動時</th><th class="p-2 lg:p-3 font-medium whitespace-nowrap">休息5分後</th></tr></thead>
+                    <div class="overflow-x-auto pb-2 -mx-4 sm:mx-0 px-4 sm:px-0">
+                        <table class="w-full text-left border-collapse min-w-[500px]">
+                            <thead><tr class="bg-slate-50 text-slate-600 text-sm border-b"><th class="p-2 sm:p-3 font-medium whitespace-nowrap">項目</th><th class="p-2 sm:p-3 font-medium text-center">休息時</th><th class="p-2 sm:p-3 font-medium text-center">活動時</th><th class="p-2 sm:p-3 font-medium text-center whitespace-nowrap">休息5分後</th></tr></thead>
                             <tbody class="text-sm text-slate-800" id="vitals-inputs"></tbody>
                         </table>
                     </div>
                 </div>
-                <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200 mb-6">
+                <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-slate-200 mb-6">
                     <h3 class="text-lg font-semibold text-slate-800 mb-2">生理反應趨勢</h3>
                     <div class="chart-container"><canvas id="vitalsChart"></canvas></div>
                 </div>
-                <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
+                <div class="bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
                     <div>
-                        <h3 class="text-md font-semibold text-slate-800 mb-3">最高活動能力</h3>
-                        <div class="grid grid-cols-2 lg:grid-cols-3 gap-2" id="mobility-toggles"></div>
-                        <div class="mt-4 flex items-center gap-2"><span class="text-sm text-slate-600">行走距離：</span><input type="number" id="walkDistance" class="w-24 rounded border p-2 text-center" placeholder="公尺"></div>
+                        <h3 class="text-md font-semibold text-slate-800 mb-3">最高活動能力 (Highest Mobility)</h3>
+                        <div class="flex flex-wrap gap-2" id="mobility-toggles"></div>
+                        <div class="mt-4 flex items-center gap-3"><span class="text-sm text-slate-600">行走距離：</span><input type="number" id="walkDistance" class="w-24 sm:w-32 rounded border p-2 text-center outline-none" placeholder="公尺"></div>
                     </div>
-                    <div class="border-t pt-4">
-                        <h3 class="text-md font-semibold text-slate-800 mb-3">依賴程度</h3>
+                    <div class="border-t pt-5">
+                        <h3 class="text-md font-semibold text-slate-800 mb-3">病患依賴程度 (Dependency)</h3>
                         <div class="flex flex-wrap gap-2" id="depend-toggles"></div>
                     </div>
                 </div>
                 <div class="mt-8 flex flex-col-reverse sm:flex-row gap-3 justify-between">
-                    <button class="nav-prev-btn w-full sm:w-auto px-6 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition" data-target="3">⬅ 上一步</button>
-                    <button class="nav-next-btn w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md" data-target="5">撰寫臨床推理 ➔</button>
+                    <button class="nav-prev-btn w-full sm:w-auto px-6 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition text-base" data-target="3">⬅ 上一步</button>
+                    <button class="nav-next-btn w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md font-medium text-base" data-target="5">撰寫臨床推理 ➔</button>
                 </div>
             </div>
 
-            <!-- Step 5 -->
             <div id="step-5" class="section-view">
-                <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-800 border-l-4 border-purple-500 pl-3">V. 臨床推理與見習心得</h2><div class="text-sm text-purple-600 font-medium mt-1">建議時間：10 分鐘</div></div>
-                <div class="space-y-4 md:space-y-6">
-                    <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-2">1. 物理治療問題 (PT Problems)</h3>
-                        <textarea id="ptProblems" class="w-full rounded-lg border border-slate-300 p-3 h-32 outline-none focus:ring-2 focus:ring-purple-400 bg-slate-50"></textarea>
+                <div class="mb-4 lg:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 border-l-4 border-purple-500 pl-3">V. 臨床推理與見習心得</h2><div class="text-sm text-purple-600 font-medium mt-1">建議時間：10 分鐘</div></div>
+                <div class="space-y-5 lg:space-y-6">
+                    <div class="bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">1. 物理治療問題 (PT Problems)</h3>
+                        <textarea id="ptProblems" class="w-full rounded-lg border border-slate-300 p-3 h-32 outline-none focus:ring-2 focus:ring-purple-400 bg-slate-50 leading-relaxed"></textarea>
                     </div>
-                    <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-2">2. 向指導老師 (CI) 提問</h3>
-                        <textarea id="ciQuestion" class="w-full rounded-lg border border-slate-300 p-3 h-32 outline-none focus:ring-2 focus:ring-purple-400 bg-slate-50"></textarea>
+                    <div class="bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">2. 向指導老師 (CI) 提問</h3>
+                        <textarea id="ciQuestion" class="w-full rounded-lg border border-slate-300 p-3 h-32 outline-none focus:ring-2 focus:ring-purple-400 bg-slate-50 leading-relaxed"></textarea>
                     </div>
                 </div>
 
-                <div class="mt-8 p-5 md:p-6 bg-blue-900 text-white rounded-xl text-center shadow-lg">
-                    <h3 class="text-xl font-bold mb-2">見習紀錄完成</h3>
-                    <div class="flex flex-col sm:flex-row justify-center gap-3 md:gap-4 mt-6">
-                        <button id="exportPdfBtn" class="w-full sm:w-auto px-6 py-3 bg-white text-blue-900 font-bold rounded-lg hover:bg-slate-100 transition shadow flex items-center justify-center gap-2">📥 匯出 PDF 紀錄</button>
-                        <button id="submitCloudBtn" class="w-full sm:w-auto px-6 py-3 bg-emerald-500 text-white font-bold rounded-lg hover:bg-emerald-600 transition shadow flex items-center justify-center gap-2">☁️ 送出至老師後台</button>
+                <div class="mt-8 p-5 sm:p-8 bg-blue-900 text-white rounded-2xl text-center shadow-lg border border-blue-800">
+                    <h3 class="text-xl sm:text-2xl font-bold mb-2 tracking-wide">見習紀錄完成</h3>
+                    <p class="text-blue-200 text-sm mb-6">請確認所有重點已紀錄。實際臨床請依循教師指導為主。</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mt-2">
+                        <button id="exportPdfBtn" class="w-full sm:w-auto px-6 py-3 bg-white text-blue-900 font-bold rounded-lg hover:bg-slate-100 transition shadow flex items-center justify-center gap-2 text-base">📥 匯出 PDF</button>
+                        <button id="submitCloudBtn" class="w-full sm:w-auto px-6 py-3 bg-emerald-500 text-white font-bold rounded-lg hover:bg-emerald-600 transition shadow flex items-center justify-center gap-2 text-base">☁️ 送出至後台</button>
                     </div>
                 </div>
-                <div class="mt-8 flex justify-start"><button class="nav-prev-btn px-6 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition" data-target="4">⬅ 返回修改數據</button></div>
+                <div class="mt-8 flex justify-start"><button class="nav-prev-btn px-6 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition text-base" data-target="4">⬅ 返回修改數據</button></div>
             </div>
 
         </div>
@@ -246,7 +248,7 @@
         const optionData = {
             phx: ['HTN 高血壓', 'DM 糖尿病', 'CAD 冠心病', 'Arrhythmia 心律不整', 'CHF 心衰竭', 'COPD 慢性肺阻塞', 'Asthma 氣喘', 'CVA 中風', 'CKD/ESRD 腎病', 'Cancer 癌症'],
             cons: ['Clear', 'Drowsy', 'Stupor', 'Coma', 'Sedated'],
-            o2: ['Room Air (未戴氧氣)', 'Nasal Cannula', 'Simple Mask', 'Venturi Mask', 'Non-rebreathing Mask', 'High Flow NC', 'BiPAP/CPAP', 'Endo/Trach'],
+            o2: ['Room Air (無)', 'Nasal Cannula', 'Simple Mask', 'Venturi Mask', 'Non-rebreathing', 'High Flow NC', 'BiPAP/CPAP', 'Endo/Trach'],
             lines: ['Peripheral IV', 'CVC', 'A-line', 'Foley (尿管)', 'N-G tube (鼻胃管)', 'Chest Tube (胸管)', 'Hemovac', 'EKG', 'Pacemaker'],
             inspectLooks: ['Cyanosis (發紺)', 'Clubbing finger', 'JVD (頸靜脈怒張)'],
             inspectPattern: ['Normal', 'Dyspnea/SOB', 'Tachypnea', 'Apnea', 'Orthopnea'],
@@ -273,10 +275,10 @@
             const nav = document.getElementById('sidebarNav');
             stepsData.forEach(step => {
                 const div = document.createElement('div');
-                div.className = `p-2 lg:p-3 lg:mb-2 rounded-lg cursor-pointer transition-all flex items-center justify-between border border-transparent flex-shrink-0 whitespace-nowrap gap-2 lg:gap-4 ${step.id === 0 ? 'bg-blue-800 border-blue-600' : 'hover:bg-slate-800'}`;
+                div.className = `p-2 sm:p-3 lg:mb-2 rounded-lg cursor-pointer transition-all flex items-center justify-between border border-transparent flex-shrink-0 whitespace-nowrap gap-3 lg:gap-4 ${step.id === 0 ? 'bg-blue-800 border-blue-500 shadow-sm' : 'hover:bg-slate-700/80'}`;
                 div.onclick = () => goToStep(step.id);
                 div.id = `nav-step-${step.id}`;
-                div.innerHTML = `<div class="flex items-center gap-1 lg:gap-3"><span class="text-base lg:text-xl">${step.icon}</span><span class="font-medium text-sm lg:text-base">${step.title}</span></div><span class="text-xs text-slate-400 font-mono bg-slate-800 px-1 rounded hidden lg:block">${step.time}</span>`;
+                div.innerHTML = `<div class="flex items-center gap-2 lg:gap-3"><span class="text-xl lg:text-2xl">${step.icon}</span><span class="font-medium text-sm sm:text-base">${step.title}</span></div><span class="text-xs text-slate-300 font-mono bg-slate-900/50 px-1.5 py-0.5 rounded hidden lg:block">${step.time}</span>`;
                 nav.appendChild(div);
             });
         }
@@ -285,7 +287,7 @@
             const container = document.getElementById(containerId);
             options.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = 'toggle-btn px-2 md:px-3 py-1.5 rounded border border-slate-300 text-xs md:text-sm text-slate-600 bg-white hover:bg-slate-50 transition-colors text-left flex-grow sm:flex-grow-0';
+                btn.className = 'toggle-btn px-3 py-2 rounded-lg border border-slate-300 text-sm sm:text-base text-slate-600 bg-white hover:bg-slate-50 transition-all text-left';
                 btn.textContent = opt;
                 btn.onclick = (e) => {
                     if (!isMultiple) { Array.from(container.children).forEach(c => c.classList.remove('active', 'bg-blue-600', 'text-white')); }
@@ -299,12 +301,12 @@
             const tbody = document.getElementById('vitals-inputs');
             vitalsFields.forEach(field => {
                 const tr = document.createElement('tr');
-                tr.className = "border-b border-slate-100";
+                tr.className = "border-b border-slate-100 hover:bg-slate-50/50";
                 tr.innerHTML = `
-                    <td class="p-2 lg:p-3 font-medium text-slate-700 whitespace-nowrap">${field.label}</td>
-                    <td class="p-1 lg:p-2"><input type="number" id="${field.id}-rest" class="w-full border rounded p-2 text-center bg-slate-50 focus:bg-white vital-input"></td>
-                    <td class="p-1 lg:p-2"><input type="number" id="${field.id}-peak" class="w-full border rounded p-2 text-center bg-rose-50 border-rose-200 focus:bg-white vital-input"></td>
-                    <td class="p-1 lg:p-2"><input type="number" id="${field.id}-rec" class="w-full border rounded p-2 text-center bg-slate-50 focus:bg-white vital-input"></td>
+                    <td class="p-2 sm:p-3 font-medium text-slate-700 whitespace-nowrap">${field.label}</td>
+                    <td class="p-1 sm:p-2"><input type="number" id="${field.id}-rest" class="w-full border border-slate-200 rounded p-2 sm:p-2.5 text-center bg-slate-50 focus:bg-white focus:border-blue-400 outline-none vital-input"></td>
+                    <td class="p-1 sm:p-2"><input type="number" id="${field.id}-peak" class="w-full border border-rose-200 rounded p-2 sm:p-2.5 text-center bg-rose-50 focus:bg-white focus:border-rose-400 outline-none vital-input"></td>
+                    <td class="p-1 sm:p-2"><input type="number" id="${field.id}-rec" class="w-full border border-slate-200 rounded p-2 sm:p-2.5 text-center bg-slate-50 focus:bg-white focus:border-blue-400 outline-none vital-input"></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -318,14 +320,15 @@
                 data: {
                     labels: ['休息', '最高值', '恢復'],
                     datasets: [
-                        { label: '心跳 HR', data: [null, null, null], borderColor: '#ef4444', backgroundColor: '#ef4444', yAxisID: 'y', tension: 0.3, pointRadius: 5 },
-                        { label: '血氧 SpO2', data: [null, null, null], borderColor: '#3b82f6', backgroundColor: '#3b82f6', yAxisID: 'y1', tension: 0.3, pointRadius: 5, borderDash: [5, 5] }
+                        { label: '心跳 HR', data: [null, null, null], borderColor: '#ef4444', backgroundColor: '#ef4444', yAxisID: 'y', tension: 0.4, pointRadius: 5, pointHoverRadius: 8 },
+                        { label: '血氧 SpO2', data: [null, null, null], borderColor: '#3b82f6', backgroundColor: '#3b82f6', yAxisID: 'y1', tension: 0.4, pointRadius: 5, pointHoverRadius: 8, borderDash: [5, 5] }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                    plugins: { tooltip: { padding: 10, bodyFont: { size: 14 } }, legend: { labels: { font: { size: 14 } } } },
                     scales: {
-                        y: { type: 'linear', display: true, position: 'left', min: 50, max: 180 },
+                        y: { type: 'linear', display: true, position: 'left', min: 50, max: 180, grid: { color: '#f1f5f9' } },
                         y1: { type: 'linear', display: true, position: 'right', min: 80, max: 100, grid: { drawOnChartArea: false } }
                     }
                 }
@@ -352,15 +355,16 @@
             const nav = document.getElementById('sidebarNav');
             document.querySelectorAll('#sidebarNav > div').forEach((el, idx) => {
                 if (idx == stepIndex) { 
-                    el.classList.add('bg-blue-800', 'border-blue-600'); 
-                    el.classList.remove('hover:bg-slate-800'); 
+                    el.classList.add('bg-blue-800', 'border-blue-500', 'shadow-sm'); 
+                    el.classList.remove('hover:bg-slate-700/80'); 
+                    // 滑動置中邏輯
                     if(window.innerWidth < 1024) {
                         const scrollLeft = el.offsetLeft - (nav.offsetWidth / 2) + (el.offsetWidth / 2);
                         nav.scrollTo({ left: scrollLeft, behavior: 'smooth' });
                     }
                 } else { 
-                    el.classList.remove('bg-blue-800', 'border-blue-600'); 
-                    el.classList.add('hover:bg-slate-800'); 
+                    el.classList.remove('bg-blue-800', 'border-blue-500', 'shadow-sm'); 
+                    el.classList.add('hover:bg-slate-700/80'); 
                 }
             });
             currentStep = parseInt(stepIndex);
@@ -412,7 +416,15 @@
                 });
                 sections.forEach(sec => sec.style.display = 'block'); navBtns.forEach(b => b.style.display = 'none'); btn.style.display = 'none';
                 const studentName = document.getElementById('studentName').value || '未命名'; const date = document.getElementById('recordDate').value || '未填寫日期';
-                html2pdf().set({ margin: 10, filename: `見習紀錄_${studentName}_${date}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, windowWidth: document.documentElement.offsetWidth }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(container).save().then(() => {
+                
+                // 平板匯出優化：確保視窗寬度捕捉正確
+                html2pdf().set({ 
+                    margin: 10, 
+                    filename: `見習紀錄_${studentName}_${date}.pdf`, 
+                    image: { type: 'jpeg', quality: 0.98 }, 
+                    html2canvas: { scale: 2, useCORS: true, windowWidth: 1024 }, 
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+                }).from(container).save().then(() => {
                     sections.forEach(sec => sec.style.display = ''); navBtns.forEach(b => b.style.display = ''); btn.style.display = 'flex'; btn.innerHTML = originalText; btn.disabled = false;
                 });
             });
