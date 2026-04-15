@@ -273,10 +273,10 @@
             const nav = document.getElementById('sidebarNav');
             stepsData.forEach(step => {
                 const div = document.createElement('div');
-                div.className = `p-2 md:p-3 lg:mb-2 rounded-lg cursor-pointer transition-all flex items-center justify-between border border-transparent flex-shrink-0 whitespace-nowrap gap-2 lg:gap-4 ${step.id === 0 ? 'bg-blue-800 border-blue-600' : 'hover:bg-slate-800'}`;
+                div.className = `p-2 lg:p-3 lg:mb-2 rounded-lg cursor-pointer transition-all flex items-center justify-between border border-transparent flex-shrink-0 whitespace-nowrap gap-2 lg:gap-4 ${step.id === 0 ? 'bg-blue-800 border-blue-600' : 'hover:bg-slate-800'}`;
                 div.onclick = () => goToStep(step.id);
                 div.id = `nav-step-${step.id}`;
-                div.innerHTML = `<div class="flex items-center gap-1 md:gap-2 lg:gap-3"><span class="text-base lg:text-xl">${step.icon}</span><span class="font-medium text-sm lg:text-base">${step.title}</span></div><span class="text-xs text-slate-400 font-mono bg-slate-800 px-1 rounded hidden lg:block">${step.time}</span>`;
+                div.innerHTML = `<div class="flex items-center gap-1 lg:gap-3"><span class="text-base lg:text-xl">${step.icon}</span><span class="font-medium text-sm lg:text-base">${step.title}</span></div><span class="text-xs text-slate-400 font-mono bg-slate-800 px-1 rounded hidden lg:block">${step.time}</span>`;
                 nav.appendChild(div);
             });
         }
