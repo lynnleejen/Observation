@@ -17,39 +17,36 @@
         .section-view { display: none; animation: fadeIn 0.3s ease-in-out; }
         .section-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* 避免裝置點擊輸入框時自動放大 */
-        input[type="text"], input[type="number"], input[type="date"], textarea, select { font-size: 16px; }
+        /* 避免手機/平板點擊輸入框時畫面自動放大跳動 */
+        input[type="text"], input[type="number"], input[type="date"], textarea, select { font-size: 16px !important; }
     </style>
 </head>
-<!-- 將 md 斷點改為 lg，讓 iPad 直式時採用上方選單，橫式時才切換為雙欄 -->
-<body class="text-slate-800 antialiased h-[100dvh] flex flex-col lg:flex-row overflow-hidden">
+<body class="text-slate-800 antialiased h-[100dvh] flex flex-col md:flex-row overflow-hidden">
 
-    <!-- 左側邊欄 / 上方橫列 -->
-    <aside class="w-full lg:w-80 bg-slate-900 text-white flex flex-col shadow-xl z-20 flex-shrink-0">
-        <div class="p-3 lg:p-6 border-b border-slate-700 flex flex-row lg:flex-col justify-between items-center lg:items-stretch gap-2 lg:gap-4">
+    <aside class="w-full md:w-56 lg:w-80 bg-slate-900 text-white flex flex-col shadow-xl z-20 flex-shrink-0 transition-all duration-300">
+        <div class="p-3 md:p-4 lg:p-6 border-b border-slate-700 flex flex-row md:flex-col justify-between items-center md:items-stretch gap-2 md:gap-3 lg:gap-4">
             <div>
-                <h1 class="text-lg lg:text-xl font-bold tracking-wider text-blue-400">NYCU PT</h1>
-                <h2 class="text-sm lg:text-lg mt-0 lg:mt-1 font-medium hidden sm:block">心肺見習數位助理</h2>
-                <h2 class="text-sm mt-0 font-medium sm:hidden block">心肺見習助理</h2>
+                <h1 class="text-lg md:text-xl font-bold tracking-wider text-blue-400">NYCU PT</h1>
+                <h2 class="text-sm md:text-sm lg:text-lg mt-0 md:mt-1 font-medium hidden md:block">心肺見習數位助理</h2>
+                <h2 class="text-sm mt-0 font-medium md:hidden block">心肺見習助理</h2>
             </div>
-            <div class="bg-slate-800 rounded-lg p-2 lg:p-4 text-center border border-slate-600 flex flex-row lg:flex-col items-center gap-3 lg:gap-0">
-                <div class="text-xs text-slate-400 mb-1 hidden lg:block">見習倒數計時 ⏱️</div>
-                <div id="timerDisplay" class="text-xl lg:text-3xl font-mono text-amber-400 font-bold tracking-wider">60:00</div>
-                <div class="mt-0 lg:mt-2 flex justify-center gap-1 lg:gap-2">
-                    <button id="startTimerBtn" class="px-2 py-1 lg:px-3 bg-blue-600 hover:bg-blue-500 rounded text-xs lg:text-sm transition-colors">開始</button>
-                    <button id="resetTimerBtn" class="px-2 py-1 lg:px-3 bg-slate-600 hover:bg-slate-500 rounded text-xs lg:text-sm transition-colors">重置</button>
+            <div class="bg-slate-800 rounded-lg p-2 md:p-3 lg:p-4 text-center border border-slate-600 flex flex-row md:flex-col items-center justify-between md:justify-center gap-3 md:gap-1 lg:gap-0">
+                <div class="text-[10px] lg:text-xs text-slate-400 hidden md:block lg:mb-1">見習倒數 ⏱️</div>
+                <div id="timerDisplay" class="text-xl md:text-2xl lg:text-3xl font-mono text-amber-400 font-bold tracking-wider">60:00</div>
+                <div class="mt-0 md:mt-2 flex justify-center gap-1 lg:gap-2">
+                    <button id="startTimerBtn" class="px-2 py-1 md:px-2 lg:px-3 bg-blue-600 hover:bg-blue-500 rounded text-xs lg:text-sm transition-colors">開始</button>
+                    <button id="resetTimerBtn" class="px-2 py-1 md:px-2 lg:px-3 bg-slate-600 hover:bg-slate-500 rounded text-xs lg:text-sm transition-colors">重置</button>
                 </div>
             </div>
         </div>
-        <nav class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-y-auto hide-scrollbar p-2 lg:p-4 gap-2 lg:gap-0" id="sidebarNav"></nav>
+        <nav class="flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto hide-scrollbar p-2 md:p-3 lg:p-4 gap-2 md:gap-0" id="sidebarNav"></nav>
         <div class="hidden lg:block p-4 border-t border-slate-700 text-xs text-slate-500 text-center">國立陽明交通大學 物理治療學系</div>
     </aside>
 
-    <!-- 右側/下方 主要內容區 -->
     <main class="flex-1 h-full overflow-y-auto bg-slate-50 relative hide-scrollbar p-4 lg:p-8">
         <div class="max-w-4xl mx-auto pb-24">
 
-            <!-- Step 0: 基本資料 -->
+            <!-- Step 0 -->
             <div id="step-0" class="section-view active">
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-8 mb-6">
                     <div class="flex items-center gap-3 mb-4">
@@ -67,19 +64,19 @@
                 </div>
             </div>
 
-            <!-- Step 1: 病歷查閱 -->
+            <!-- Step 1 -->
             <div id="step-1" class="section-view">
                 <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-800 border-l-4 border-blue-500 pl-3">I. 基本資料與病歷查閱</h2><div class="text-sm text-blue-600 font-medium mt-1">建議時間：10 分鐘</div></div>
                 <div class="space-y-4 md:space-y-6">
                     <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">病患背景</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div class="flex gap-4">
                                 <div class="w-1/2"><label class="block text-sm text-slate-500 mb-1">年齡</label><input type="number" id="age" class="w-full rounded border p-2 bg-slate-50"></div>
                                 <div class="w-1/2"><label class="block text-sm text-slate-500 mb-1">性別</label><select id="gender" class="w-full rounded border p-2 bg-slate-50"><option>男</option><option>女</option></select></div>
                             </div>
                             <div><label class="block text-sm text-slate-500 mb-1">主治醫師診斷 (Medical Dx)</label><input type="text" id="medicalDx" class="w-full rounded border p-2 bg-slate-50"></div>
-                            <div class="md:col-span-2"><label class="block text-sm text-slate-500 mb-1">入院主要原因 (Chief Complaint)</label><input type="text" id="chiefComplaint" class="w-full rounded border p-2 bg-slate-50"></div>
+                            <div class="lg:col-span-2"><label class="block text-sm text-slate-500 mb-1">入院主要原因 (Chief Complaint)</label><input type="text" id="chiefComplaint" class="w-full rounded border p-2 bg-slate-50"></div>
                         </div>
                     </div>
                     <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
@@ -101,7 +98,7 @@
                 </div>
             </div>
 
-            <!-- Step 2: 床邊觀察 -->
+            <!-- Step 2 -->
             <div id="step-2" class="section-view">
                 <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-800 border-l-4 border-emerald-500 pl-3">II. 床邊觀察與管線安全</h2><div class="text-sm text-emerald-600 font-medium mt-1">建議時間：5 分鐘</div></div>
                 <div class="space-y-4 md:space-y-6">
@@ -111,7 +108,7 @@
                     </div>
                     <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">氧氣與呼吸設備 (O2 Therapy)</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div class="flex flex-col gap-2" id="o2-toggles"></div>
                             <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
                                 <h4 class="text-sm font-semibold text-slate-600 mb-2">設備參數紀錄</h4>
@@ -135,7 +132,7 @@
                 </div>
             </div>
 
-            <!-- Step 3: 理學檢查 -->
+            <!-- Step 3 -->
             <div id="step-3" class="section-view">
                 <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-800 border-l-4 border-indigo-500 pl-3">III. 心肺理學檢查 (PE)</h2><div class="text-sm text-indigo-600 font-medium mt-1">建議時間：15 分鐘</div></div>
                 <div class="space-y-4 md:space-y-6">
@@ -144,7 +141,7 @@
                         <div class="space-y-4">
                             <div><label class="block text-sm text-slate-500 mb-2">外觀特徵</label><div class="flex flex-wrap gap-2" id="inspect-looks"></div></div>
                             <div><label class="block text-sm text-slate-500 mb-2">呼吸型態</label><div class="flex flex-wrap gap-2" id="inspect-pattern"></div></div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                 <div class="p-3 bg-slate-50 rounded-lg border"><label class="block text-sm text-slate-700 mb-2 font-medium">呼吸動作異常</label><div class="flex flex-col gap-2" id="inspect-motion"></div></div>
                                 <div class="p-3 bg-slate-50 rounded-lg border"><label class="block text-sm text-slate-700 mb-2 font-medium">胸廓擴張對稱性</label><div class="flex flex-wrap gap-2" id="inspect-chest"></div></div>
                             </div>
@@ -152,11 +149,11 @@
                     </div>
                     <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2"><span class="text-xl">🩺</span> 2. 聽診與咳痰</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
                             <div class="bg-blue-50/50 p-4 rounded-lg border border-blue-100"><h4 class="font-medium text-blue-900 mb-3 border-b border-blue-200 pb-1">右肺 (R't) 呼吸音</h4><div class="flex flex-col gap-2" id="aus-right"></div></div>
                             <div class="bg-blue-50/50 p-4 rounded-lg border border-blue-100"><h4 class="font-medium text-blue-900 mb-3 border-b border-blue-200 pb-1">左肺 (L't) 呼吸音</h4><div class="flex flex-col gap-2" id="aus-left"></div></div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 border-t pt-4">
                             <div><label class="block text-sm text-slate-500 mb-2">咳嗽能力</label><div class="flex flex-wrap gap-2" id="cough-ability"></div></div>
                             <div><label class="block text-sm text-slate-500 mb-2">痰液狀況</label><input type="text" id="sputum" class="w-full rounded border p-2 bg-slate-50" placeholder="量 / 顏色"></div>
                         </div>
@@ -176,14 +173,14 @@
                 </div>
             </div>
 
-            <!-- Step 4: 活動與運動反應 -->
+            <!-- Step 4 -->
             <div id="step-4" class="section-view">
                 <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-800 border-l-4 border-rose-500 pl-3">IV. 活動與運動反應</h2><div class="text-sm text-rose-600 font-medium mt-1">建議時間：20 分鐘</div></div>
                 <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
                     <h3 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">生命徵象 (Vital Signs)</h3>
                     <div class="overflow-x-auto pb-2">
-                        <table class="w-full text-left border-collapse min-w-[500px]">
-                            <thead><tr class="bg-slate-50 text-slate-600 text-sm border-b"><th class="p-3 font-medium whitespace-nowrap">項目</th><th class="p-3 font-medium">休息時</th><th class="p-3 font-medium">活動時</th><th class="p-3 font-medium whitespace-nowrap">休息5分後</th></tr></thead>
+                        <table class="w-full text-left border-collapse min-w-[450px]">
+                            <thead><tr class="bg-slate-50 text-slate-600 text-sm border-b"><th class="p-2 lg:p-3 font-medium whitespace-nowrap">項目</th><th class="p-2 lg:p-3 font-medium">休息時</th><th class="p-2 lg:p-3 font-medium">活動時</th><th class="p-2 lg:p-3 font-medium whitespace-nowrap">休息5分後</th></tr></thead>
                             <tbody class="text-sm text-slate-800" id="vitals-inputs"></tbody>
                         </table>
                     </div>
@@ -209,7 +206,7 @@
                 </div>
             </div>
 
-            <!-- Step 5: 臨床推理 -->
+            <!-- Step 5 -->
             <div id="step-5" class="section-view">
                 <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-800 border-l-4 border-purple-500 pl-3">V. 臨床推理與見習心得</h2><div class="text-sm text-purple-600 font-medium mt-1">建議時間：10 分鐘</div></div>
                 <div class="space-y-4 md:space-y-6">
@@ -279,7 +276,7 @@
                 div.className = `p-2 md:p-3 lg:mb-2 rounded-lg cursor-pointer transition-all flex items-center justify-between border border-transparent flex-shrink-0 whitespace-nowrap gap-2 lg:gap-4 ${step.id === 0 ? 'bg-blue-800 border-blue-600' : 'hover:bg-slate-800'}`;
                 div.onclick = () => goToStep(step.id);
                 div.id = `nav-step-${step.id}`;
-                div.innerHTML = `<div class="flex items-center gap-1 lg:gap-3"><span class="text-base lg:text-xl">${step.icon}</span><span class="font-medium text-sm lg:text-base">${step.title}</span></div><span class="text-xs text-slate-400 font-mono bg-slate-800 px-1 rounded hidden lg:block">${step.time}</span>`;
+                div.innerHTML = `<div class="flex items-center gap-1 md:gap-2 lg:gap-3"><span class="text-base lg:text-xl">${step.icon}</span><span class="font-medium text-sm lg:text-base">${step.title}</span></div><span class="text-xs text-slate-400 font-mono bg-slate-800 px-1 rounded hidden lg:block">${step.time}</span>`;
                 nav.appendChild(div);
             });
         }
@@ -304,10 +301,10 @@
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-slate-100";
                 tr.innerHTML = `
-                    <td class="p-2 md:p-3 font-medium text-slate-700 whitespace-nowrap">${field.label}</td>
-                    <td class="p-1 md:p-2"><input type="number" id="${field.id}-rest" class="w-full border rounded p-2 text-center bg-slate-50 focus:bg-white vital-input"></td>
-                    <td class="p-1 md:p-2"><input type="number" id="${field.id}-peak" class="w-full border rounded p-2 text-center bg-rose-50 border-rose-200 focus:bg-white vital-input"></td>
-                    <td class="p-1 md:p-2"><input type="number" id="${field.id}-rec" class="w-full border rounded p-2 text-center bg-slate-50 focus:bg-white vital-input"></td>
+                    <td class="p-2 lg:p-3 font-medium text-slate-700 whitespace-nowrap">${field.label}</td>
+                    <td class="p-1 lg:p-2"><input type="number" id="${field.id}-rest" class="w-full border rounded p-2 text-center bg-slate-50 focus:bg-white vital-input"></td>
+                    <td class="p-1 lg:p-2"><input type="number" id="${field.id}-peak" class="w-full border rounded p-2 text-center bg-rose-50 border-rose-200 focus:bg-white vital-input"></td>
+                    <td class="p-1 lg:p-2"><input type="number" id="${field.id}-rec" class="w-full border rounded p-2 text-center bg-slate-50 focus:bg-white vital-input"></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -357,7 +354,6 @@
                 if (idx == stepIndex) { 
                     el.classList.add('bg-blue-800', 'border-blue-600'); 
                     el.classList.remove('hover:bg-slate-800'); 
-                    // 當畫面寬度小於 1024px (平板/手機) 時，選單維持在頂部橫向滑動並自動置中
                     if(window.innerWidth < 1024) {
                         const scrollLeft = el.offsetLeft - (nav.offsetWidth / 2) + (el.offsetWidth / 2);
                         nav.scrollTo({ left: scrollLeft, behavior: 'smooth' });
@@ -406,7 +402,6 @@
                 btn.addEventListener('click', (e) => { goToStep(e.target.dataset.target); });
             });
 
-            // 匯出 PDF
             document.getElementById('exportPdfBtn').addEventListener('click', function() {
                 const btn = this; const originalText = btn.innerHTML; btn.innerHTML = '⏳ 處理中...'; btn.disabled = true;
                 const container = document.querySelector('.max-w-4xl'); const sections = document.querySelectorAll('.section-view'); const navBtns = document.querySelectorAll('.nav-next-btn, .nav-prev-btn');
@@ -422,7 +417,6 @@
                 });
             });
 
-            // 雲端送出
             document.getElementById('submitCloudBtn').addEventListener('click', async function() {
                 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdiELtcfYhcCmdq5PadgCParpW8jivRS1OTnrFsTRmgsvHkrziJ0CwZiveinadGGy5/exec';
                 const btn = this; const originalText = btn.innerHTML; btn.innerHTML = '⏳ 傳送中...'; btn.disabled = true;
