@@ -8,8 +8,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
-        
-        /* === 基礎變數與重置 === */
         :root {
             --bg-main: #f8fafc;
             --bg-sidebar: #0f172a;
@@ -24,80 +22,54 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans TC', sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-dark); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-        
-        /* 避免 iOS 輸入時自動放大 */
         input, select, textarea, button { font-size: 16px !important; }
-        
-        /* === 佈局 === */
         .sidebar { background-color: var(--bg-sidebar); color: white; flex-shrink: 0; z-index: 20; display: flex; flex-direction: column; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .main-content { flex: 1; overflow-y: auto; padding: 15px; position: relative; -webkit-overflow-scrolling: touch; }
         .container { max-width: 900px; margin: 0 auto; padding-bottom: 80px; }
-        
-        /* === 側邊欄內部 === */
         .sidebar-header { padding: 15px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
         .brand h1 { color: #60a5fa; font-size: 20px; font-weight: bold; letter-spacing: 1px; }
         .brand h2 { font-size: 14px; font-weight: normal; margin-top: 4px; color: #cbd5e1; }
-        
         .timer-box { background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #475569; text-align: center; display: flex; align-items: center; gap: 10px; }
         .timer-display { color: var(--warning); font-size: 24px; font-family: monospace; font-weight: bold; letter-spacing: 2px; }
         .timer-controls button { padding: 6px 12px; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 12px; }
         .btn-start { background: var(--primary); } .btn-start:hover { background: var(--primary-hover); }
         .btn-reset { background: #64748b; } .btn-reset:hover { background: #475569; }
-        
         .nav-menu { display: flex; overflow-x: auto; padding: 10px; gap: 8px; -webkit-overflow-scrolling: touch; }
         .nav-menu::-webkit-scrollbar { display: none; }
         .nav-item { padding: 10px 15px; background: transparent; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap; color: #cbd5e1; border: 1px solid transparent; transition: 0.2s; }
         .nav-item.active { background: #1e3a8a; border-color: #3b82f6; color: white; }
-        
-        /* === 區塊與卡片 === */
         .section-view { display: none; animation: fadeIn 0.3s ease; }
         .section-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .section-title { font-size: 22px; font-weight: bold; border-left: 4px solid var(--primary); padding-left: 12px; margin-bottom: 5px; }
         .section-time { font-size: 14px; color: var(--primary); margin-bottom: 20px; padding-left: 16px; }
-        
         .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--secondary); }
         .card-header { font-size: 18px; font-weight: bold; border-bottom: 1px solid var(--secondary); padding-bottom: 10px; margin-bottom: 15px; color: var(--text-dark); display: flex; align-items: center; gap: 8px; }
-        
-        /* === 表單元件 === */
         .grid-2 { display: grid; grid-template-columns: 1fr; gap: 15px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        
         label { display: block; font-size: 14px; color: var(--text-gray); margin-bottom: 6px; font-weight: 500; }
-        input[type="text"], input[type="number"], input[type="date"], select, textarea { 
-            width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; color: var(--text-dark); outline: none; transition: 0.2s; 
-        }
+        input[type="text"], input[type="number"], input[type="date"], select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; color: var(--text-dark); outline: none; transition: 0.2s; }
         input:focus, select:focus, textarea:focus { border-color: var(--primary); background: white; }
-        
         .toggles-container { display: flex; flex-wrap: wrap; gap: 8px; }
         .toggle-btn { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; cursor: pointer; transition: 0.2s; text-align: left; }
         .toggle-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        
-        /* === 表格與圖表 === */
         .table-responsive { overflow-x: auto; margin-bottom: 15px; }
         table { width: 100%; border-collapse: collapse; min-width: 450px; }
         th { background: #f1f5f9; padding: 10px; text-align: left; font-size: 14px; color: var(--text-gray); border-bottom: 2px solid var(--secondary); }
         td { padding: 8px; border-bottom: 1px solid var(--secondary); }
         .vital-input { width: 100%; text-align: center; }
-        
         .chart-container { height: 300px; width: 100%; position: relative; }
-        
-        /* === 按鈕區 === */
         .btn-group { display: flex; justify-content: space-between; margin-top: 30px; gap: 10px; flex-direction: column-reverse; }
         .btn-large { padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; text-align: center; width: 100%; }
         .btn-prev { background: #e2e8f0; color: #475569; }
         .btn-next { background: var(--primary); color: white; box-shadow: 0 4px 6px rgba(37,99,235,0.2); }
-        .btn-export { background: white; color: #1e3a8a; }
+        .btn-export { background: white; color: #1e3a8a; border: 1px solid #1e3a8a; }
         .btn-submit { background: var(--success); color: white; }
-        
         .final-box { background: #1e3a8a; padding: 30px 20px; border-radius: 12px; text-align: center; color: white; margin-top: 30px; }
         .final-box h3 { font-size: 24px; margin-bottom: 10px; }
         .final-box p { color: #93c5fd; font-size: 14px; margin-bottom: 20px; }
         .final-btn-wrap { display: flex; flex-direction: column; gap: 15px; }
-        
-        /* === 響應式排版 (電腦與橫式平板) === */
         @media (min-width: 1024px) {
             body { flex-direction: row; }
             .sidebar { width: 280px; height: 100vh; }
@@ -114,6 +86,10 @@
     </style>
 </head>
 <body>
+<!-- Chosen Palette: Slate Gray, Medical Blue, Emerald Green -->
+<!-- Application Structure Plan: Sidebar Navigation with Main Content Area for steps. Optimized with pure CSS for absolute device compatibility without modern build tools. -->
+<!-- Visualization & Content Choices: Pure HTML/JS/CSS structure. Chart.js for visualization. html2pdf for localized snapshot rendering. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -133,7 +109,7 @@
     </aside>
 
     <main class="main-content">
-        <div class="container">
+        <div class="container" id="pdf-container">
 
             <div id="step-0" class="section-view active">
                 <div class="card">
@@ -310,7 +286,7 @@
                     <h3>見習紀錄完成</h3>
                     <p>請確認所有重點已紀錄。實際臨床請依循教師指導為主。</p>
                     <div class="final-btn-wrap">
-                        <button id="exportPdfBtn" class="btn-large btn-export">📥 匯出 PDF 紀錄</button>
+                        <button id="exportPdfBtn" class="btn-large btn-export">📥 匯出分頁 PDF</button>
                         <button id="submitCloudBtn" class="btn-large btn-submit">☁️ 送出至後台</button>
                     </div>
                 </div>
@@ -487,20 +463,45 @@
 
             document.getElementById('exportPdfBtn').addEventListener('click', function() {
                 const btn = this; const originalText = btn.innerHTML; btn.innerHTML = '⏳ 處理中...'; btn.disabled = true;
-                const container = document.querySelector('.container'); const sections = document.querySelectorAll('.section-view'); const navBtns = document.querySelectorAll('.btn-next, .btn-prev');
+                const container = document.getElementById('pdf-container');
+                const sections = document.querySelectorAll('.section-view');
+                
                 container.querySelectorAll('input, textarea, select').forEach(input => {
                     if (input.tagName === 'TEXTAREA') { input.textContent = input.value; }
                     else if (input.tagName === 'SELECT') { const opt = input.options[input.selectedIndex]; if (opt) { Array.from(input.options).forEach(o => o.removeAttribute('selected')); opt.setAttribute('selected', 'selected'); } }
                     else { input.setAttribute('value', input.value); }
                 });
-                sections.forEach(sec => sec.style.display = 'block'); navBtns.forEach(b => b.style.display = 'none'); btn.style.display = 'none';
-                const studentName = document.getElementById('studentName').value || '未命名'; const date = document.getElementById('recordDate').value || '未填寫日期';
+
+                const printStyle = document.createElement('style');
+                printStyle.id = 'pdf-print-style';
+                printStyle.innerHTML = `
+                    .section-view { display: block !important; page-break-before: always; break-before: page; padding-top: 10px; }
+                    #step-0 { page-break-before: auto; break-before: auto; }
+                    .btn-group, .btn-prev, .btn-next, .final-btn-wrap { display: none !important; }
+                    .card { break-inside: avoid; page-break-inside: avoid; }
+                    .chart-container { break-inside: avoid; page-break-inside: avoid; }
+                `;
+                document.head.appendChild(printStyle);
+
+                const studentName = document.getElementById('studentName').value || '未命名'; 
+                const date = document.getElementById('recordDate').value || '未填寫日期';
                 
                 html2pdf().set({ 
-                    margin: 10, filename: `見習紀錄_${studentName}_${date}.pdf`, image: { type: 'jpeg', quality: 0.98 }, 
-                    html2canvas: { scale: 2, useCORS: true, windowWidth: 1024 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+                    margin: 10, 
+                    filename: `見習紀錄_${studentName}_${date}.pdf`, 
+                    image: { type: 'jpeg', quality: 0.95 }, 
+                    pagebreak: { mode: ['css', 'legacy'] },
+                    html2canvas: { scale: 1.5, useCORS: true, windowWidth: 1024, scrollY: 0 }, 
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
                 }).from(container).save().then(() => {
-                    sections.forEach(sec => sec.style.display = ''); navBtns.forEach(b => b.style.display = ''); btn.style.display = 'block'; btn.innerHTML = originalText; btn.disabled = false;
+                    document.head.removeChild(printStyle);
+                    sections.forEach(sec => sec.style.display = '');
+                    btn.innerHTML = originalText; btn.disabled = false;
+                }).catch(err => {
+                    document.head.removeChild(printStyle);
+                    sections.forEach(sec => sec.style.display = '');
+                    btn.innerHTML = originalText; btn.disabled = false;
+                    alert('PDF 匯出失敗，請檢查裝置記憶體限制。');
                 });
             });
 
