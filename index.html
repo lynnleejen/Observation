@@ -459,7 +459,7 @@
             });
 
             // ==========================================
-            // 實體渲染 PDF 匯出模組：強制排版防護 + 強制分頁
+            // 實體渲染 PDF 匯出模組：強制外框防護 + 強制分頁
             // ==========================================
             document.getElementById('exportPdfBtn').addEventListener('click', function() {
                 const btn = this;
@@ -484,14 +484,7 @@
                     else { input.setAttribute('value', input.value); }
                 });
 
-                // 2. 準備實體 DOM (放棄虛擬背景複製，迫使舊設備必須乖乖畫圖)
-                const originalMaxWidth = container.style.maxWidth;
-                const originalWidth = container.style.width;
-                
-                // 強迫畫面變成 800px 寬 (A4標準比例)，解決手機與平板變橫式溢出的問題
-                container.style.maxWidth = '800px';
-                container.style.width = '800px';
-
+                // 2. 準備實體 DOM (完全破解外層隱藏限制，強制全開)
                 hiddenEls.forEach(el => el.style.display = 'none');
 
                 sections.forEach(sec => {
@@ -501,11 +494,26 @@
                     sec.style.transition = 'none';
                 });
 
-                // 3. 注入 PDF 列印專用 CSS 護城河
+                // 3. 注入 PDF 列印專屬的「絕對護城河」
+                // 破解關鍵：強制解除 body 與 main-content 的寬度與 overflow 限制，保證右側不會被砍斷
                 const printStyle = document.createElement('style');
                 printStyle.id = 'pdf-print-style';
                 printStyle.innerHTML = `
                     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                    
+                    /* 解除所有外層限制，強迫寬度撐開為 800px */
+                    html, body, .main-content { 
+                        width: 800px !important; 
+                        min-width: 800px !important; 
+                        max-width: 800px !important; 
+                        height: auto !important; 
+                        overflow: visible !important; 
+                        position: static !important; 
+                        display: block !important; 
+                    }
+                    .sidebar { display: none !important; } /* 徹底隱藏側邊欄避免干擾 */
+                    #pdf-container { width: 800px !important; max-width: 800px !important; margin: 0 !important; padding: 15px !important; }
+                    
                     body, p, span, label, h2, h3, h4, th, td { color: #000 !important; }
                     .card { break-inside: avoid !important; page-break-inside: avoid !important; border: 1px solid #cbd5e1 !important; box-shadow: none !important; background: #fff !important; margin-bottom: 20px !important;}
                     .chart-container { break-inside: avoid !important; page-break-inside: avoid !important; }
@@ -518,7 +526,7 @@
                 `;
                 document.head.appendChild(printStyle);
 
-                // 4. 強制停頓 0.3 秒：讓設備有時間把被隱藏的區塊與文字畫出來，解決白紙問題
+                // 4. 強制停頓 0.3 秒：讓設備有時間把畫面畫滿 800px
                 setTimeout(() => {
                     const studentName = document.getElementById('studentName').value || '未命名';
                     const date = document.getElementById('recordDate').value || '未填寫日期';
@@ -528,10 +536,11 @@
                         filename: `見習紀錄_${studentName}_${date}.pdf`,
                         image: { type: 'jpeg', quality: 0.98 },
                         
-                        // 完美分頁核心：要求系統在每個 .section-view 之前強制換頁 (第一步 #step-0 除外)
+                        // 完美分頁核心
                         pagebreak: { mode: 'css', before: '.section-view:not(#step-0)' }, 
                         
-                        html2canvas: { scale: 1.5, useCORS: true, backgroundColor: '#ffffff', logging: false },
+                        // 設定擷取引擎抓取的視窗就是 800px，杜絕溢出
+                        html2canvas: { scale: 1.5, useCORS: true, windowWidth: 800, width: 800, backgroundColor: '#ffffff', logging: false },
                         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                     };
 
@@ -545,10 +554,8 @@
                     });
                 }, 300);
 
-                // 5. 復原畫面機制：拍完照瞬間恢復成原本舒適的操作畫面
+                // 5. 復原畫面機制
                 function restoreUI() {
-                    container.style.maxWidth = originalMaxWidth;
-                    container.style.width = originalWidth;
                     sections.forEach(sec => {
                         sec.style.display = '';
                         sec.style.opacity = '';
