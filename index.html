@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>心肺物理治療見習數位助理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -457,7 +458,7 @@
                 btn.addEventListener('click', (e) => { goToStep(e.target.dataset.target); });
             });
 
-            // --- PDF 匯出模組 (修正浮水印、溢出與強制分頁) ---
+            // --- 終極完美 PDF 匯出模組 (無痕背景排版) ---
             document.getElementById('exportPdfBtn').addEventListener('click', function() {
                 const btn = this; 
                 const originalText = btn.innerHTML; 
@@ -465,10 +466,8 @@
                 btn.disabled = true;
 
                 const container = document.getElementById('pdf-container');
-                const sections = document.querySelectorAll('.section-view');
-                const hiddenEls = document.querySelectorAll('.btn-group, .btn-prev, .btn-next, .final-btn-wrap');
                 
-                // 1. 鎖定輸入值至 HTML
+                // 1. 鎖定輸入框的資料，讓 html2canvas 抓得到
                 container.querySelectorAll('input, textarea, select').forEach(input => {
                     if (input.tagName === 'TEXTAREA') { input.textContent = input.value; }
                     else if (input.tagName === 'SELECT') { 
@@ -481,78 +480,75 @@
                     else { input.setAttribute('value', input.value); }
                 });
 
-                // 2. 儲存原始樣式，準備進行強制覆蓋
-                const originalMaxWidth = container.style.maxWidth;
-                const originalWidth = container.style.width;
-                
-                // 強制設定為電腦版寬度，解決行動裝置「溢出跑版」問題
-                container.style.maxWidth = '800px';
-                container.style.width = '800px';
-
-                // 隱藏不必要的按鈕
-                hiddenEls.forEach(el => el.style.display = 'none');
-
-                // 3. 強制注入樣式：消除浮水印(透明度與動畫)、設定分頁
-                sections.forEach((sec, index) => {
-                    sec.style.display = 'block';
-                    sec.style.opacity = '1';              // 破解浮水印主因：強制 100% 不透明
-                    sec.style.animation = 'none';         // 破解浮水印主因：強制停止漸變動畫
-                    sec.style.transition = 'none';
-                    
-                    // 解決分頁問題：除了第一個畫面(基本資料)，其餘全部強制另起新頁
-                    if (index > 0) {
-                        sec.style.pageBreakBefore = 'always';
-                    }
-                });
-
                 const studentName = document.getElementById('studentName').value || '未命名'; 
                 const date = document.getElementById('recordDate').value || '未填寫日期';
                 
-                // 4. 設定 PDF 引擎參數
+                // 2. 啟動無痕 PDF 渲染引擎
                 const opt = { 
                     margin: [10, 10, 10, 10], 
                     filename: `見習紀錄_${studentName}_${date}.pdf`, 
-                    image: { type: 'jpeg', quality: 0.98 }, 
-                    pagebreak: { mode: ['css', 'legacy'] }, // 啟用 CSS 換頁模式支援
+                    image: { type: 'jpeg', quality: 1.0 }, 
+                    pagebreak: { mode: ['css', 'legacy'] }, // 啟用 CSS 分頁支援
                     html2canvas: { 
-                        scale: 1.5,                 // 降低倍率，減少記憶體崩潰機率
+                        scale: 1.5, 
                         useCORS: true, 
-                        windowWidth: 820,           // 搭配上方 container 的 800px，創造完美截圖視窗
-                        backgroundColor: '#ffffff', // 強制純白背景
-                        logging: false
+                        windowWidth: 794, // 絕對鎖定：A4 直式寬度
+                        width: 794,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        onclone: function(clonedDoc) {
+                            // 在「看不見的背景副本」中執行外科手術級的排版改造
+                            const cloneContainer = clonedDoc.getElementById('pdf-container');
+                            cloneContainer.style.width = '794px';
+                            cloneContainer.style.maxWidth = '794px';
+                            cloneContainer.style.margin = '0 auto';
+                            
+                            // 注入專為 PDF 打造的終極樣式表
+                            const style = clonedDoc.createElement('style');
+                            style.innerHTML = `
+                                /* 殺死所有動畫與過場，絕對解決「浮水印、半透明」問題 */
+                                * { animation: none !important; transition: none !important; opacity: 1 !important; }
+                                
+                                /* 強制將 6 個步驟全數顯示，並且規定「每一個步驟」都要換一頁 */
+                                .section-view { display: block !important; page-break-before: always !important; break-before: page !important; padding-top: 15px !important; }
+                                #step-0 { page-break-before: avoid !important; break-before: auto !important; padding-top: 0 !important; }
+                                
+                                /* 隱藏網頁操作按鈕 */
+                                button, .btn-group, .btn-prev, .btn-next, .final-btn-wrap { display: none !important; }
+                                
+                                /* 強制啟動雙欄排版，節省垂直空間，防止無限拉長 */
+                                .grid-2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 15px !important; }
+                                
+                                /* 保護卡片與圖表不被切斷 */
+                                .card { break-inside: avoid !important; page-break-inside: avoid !important; border: 1px solid #cbd5e1 !important; box-shadow: none !important; background: #fff !important; margin-bottom: 20px !important;}
+                                .chart-container { break-inside: avoid !important; page-break-inside: avoid !important; }
+                                
+                                /* 解除表格的滑動限制，允許自動換行 */
+                                .table-responsive { overflow: visible !important; }
+                                table { width: 100% !important; min-width: 100% !important; }
+                                th, td { white-space: normal !important; word-wrap: break-word !important; }
+                                
+                                /* 確保全黑字體，加強列印對比度 */
+                                body, p, span, label, h2, h3, h4, th, td { color: #000 !important; }
+                                input, select, textarea { border: 1px solid #94a3b8 !important; background: #fff !important; color: #000 !important; }
+                                .toggle-btn { border-color: #94a3b8 !important; color: #000 !important; }
+                                .toggle-btn.active { background-color: #e2e8f0 !important; font-weight: bold !important; border-width: 2px !important; }
+                            `;
+                            clonedDoc.head.appendChild(style);
+                        }
                     }, 
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
                 };
 
+                // 3. 匯出完成，恢復按鈕狀態 (您的原本畫面完全不會受到影響閃爍)
                 html2pdf().set(opt).from(container).save().then(() => {
-                    // 5. 輸出成功後，無縫復原原本的畫面
-                    container.style.maxWidth = originalMaxWidth;
-                    container.style.width = originalWidth;
-                    sections.forEach((sec, index) => {
-                        sec.style.display = '';
-                        sec.style.opacity = '';
-                        sec.style.animation = '';
-                        sec.style.transition = '';
-                        if (index > 0) sec.style.pageBreakBefore = '';
-                    });
-                    hiddenEls.forEach(el => el.style.display = '');
                     btn.innerHTML = originalText; 
                     btn.disabled = false;
                 }).catch(err => {
-                    // 發生錯誤時同樣執行復原機制
-                    container.style.maxWidth = originalMaxWidth;
-                    container.style.width = originalWidth;
-                    sections.forEach((sec, index) => {
-                        sec.style.display = '';
-                        sec.style.opacity = '';
-                        sec.style.animation = '';
-                        sec.style.transition = '';
-                        if (index > 0) sec.style.pageBreakBefore = '';
-                    });
-                    hiddenEls.forEach(el => el.style.display = '');
                     btn.innerHTML = originalText; 
                     btn.disabled = false;
-                    alert('匯出時發生錯誤，請重新整理後重試。');
+                    alert('匯出時發生錯誤。');
+                    console.error(err);
                 });
             });
 
