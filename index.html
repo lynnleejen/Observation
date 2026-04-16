@@ -135,8 +135,8 @@
                             <div style="flex:1"><label>年齡</label><input type="number" id="age"></div>
                             <div style="flex:1"><label>性別</label><select id="gender"><option>男</option><option>女</option></select></div>
                         </div>
-                        <div><label>主治醫師診斷 (Medical Dx)</label><input type="text" id="medicalDx"></div>
-                        <div style="grid-column: 1 / -1;"><label>入院主要原因 (Chief Complaint)</label><input type="text" id="chiefComplaint"></div>
+                        <div><label>主診斷 (Medical Dx)</label><input type="text" id="medicalDx"></div>
+                        <div style="grid-column: 1 / -1;"><label>病人主訴 (Chief Complaint)</label><input type="text" id="chiefComplaint"></div>
                     </div>
                 </div>
                 
@@ -240,7 +240,7 @@
                     <h3 class="card-header">生命徵象 (Vital Signs)</h3>
                     <div class="table-responsive">
                         <table>
-                            <thead><tr><th>項目</th><th style="text-align:center;">休息時</th><th style="text-align:center;">活動時</th><th style="text-align:center;">休息後</th></tr></thead>
+                            <thead><tr><th>項目</th><th style="text-align:center;">休息時</th><th style="text-align:center;">活動時</th><th style="text-align:center;">恢復期</th></tr></thead>
                             <tbody id="vitals-inputs"></tbody>
                         </table>
                     </div>
@@ -305,18 +305,18 @@
         ];
 
         const optionData = {
-            phx: ['HTN 高血壓', 'DM 糖尿病', 'CAD 冠心病', 'Arrhythmia 心律', 'CHF 心衰竭', 'COPD 肺阻塞', 'Asthma 氣喘', 'CVA 中風', 'CKD/ESRD 腎病', 'Cancer 癌症'],
+            phx: ['HTN 高血壓', 'DM 糖尿病', 'CAD 冠心病', 'Arrhythmia 心律不整', 'CHF 心衰竭', 'COPD 慢性肺阻塞', 'Asthma 氣喘', 'CVA 中風', 'CKD/ESRD 腎病', 'Cancer 癌症'],
             cons: ['Clear', 'Drowsy', 'Stupor', 'Coma', 'Sedated'],
             o2: ['Room Air (無)', 'Nasal Cannula', 'Simple Mask', 'Venturi Mask', 'Non-rebreathing', 'High Flow NC', 'BiPAP/CPAP', 'Endo/Trach'],
-            lines: ['Peripheral IV', 'CVC', 'A-line', 'Foley (尿管)', 'N-G tube', 'Chest Tube', 'Hemovac', 'EKG', 'Pacemaker'],
-            inspectLooks: ['Cyanosis (發紺)', 'Clubbing finger', 'JVE'],
+            lines: ['Peripheral IV', 'CVC', 'A-line', 'Foley', 'N-G tube', 'Chest Tube', 'Hemovac', 'EKG monitor', 'Pacemaker'],
+            inspectLooks: ['Pale','Cyanosis','Clubbing finger', 'JVE'],
             inspectPattern: ['Normal', 'Dyspnea/SOB', 'Tachypnea', 'Apnea', 'Orthopnea'],
             inspectMotion: ['正常','呼吸輔助肌使用', '胸腹不協調呼吸'],
-            inspectChest: ['對稱', '偏弱: 右', '偏弱: 左'],
+            inspectChest: ['對稱', 'R<L', 'L<R'],
             auscultation: ['Normal', 'Decreased', 'Crackles', 'Wheezes'],
             cough: ['Functional', 'Weak', 'Non-functional', 'NA'],
             edema: ['無', '有'],
-            mobility: ['床上翻身/坐起', '床邊坐姿', '轉位至輪椅', '站立', '行走'],
+            mobility: ['床上活動', '床上坐高', '床邊坐姿', '轉位至輪椅', '站立', '行走'],
             depend: ['Independent', 'Supervision', 'Min Assist', 'Mod Assist', 'Max Assist']
         };
 
@@ -374,7 +374,7 @@
             vitalsChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['休息', '活動時', '恢復'],
+                    labels: ['休息', '活動時', '恢復期'],
                     datasets: [
                         { label: '心跳 HR', data: [null, null, null], borderColor: '#ef4444', backgroundColor: '#ef4444', yAxisID: 'y', tension: 0.3, pointRadius: 6 },
                         { label: '血氧 SpO2', data: [null, null, null], borderColor: '#3b82f6', backgroundColor: '#3b82f6', yAxisID: 'y1', tension: 0.3, pointRadius: 6, borderDash: [5, 5] }
