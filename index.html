@@ -459,7 +459,7 @@
             });
 
             // ==========================================
-            // 實體渲染 PDF 匯出模組：終極強制絕對定位與對齊
+            // 實體渲染 PDF 匯出模組：視窗欺騙與高度解放 (解決溢出裁切終極版)
             // ==========================================
             document.getElementById('exportPdfBtn').addEventListener('click', function() {
                 const btn = this;
@@ -488,48 +488,26 @@
                 hiddenEls.forEach(el => el.style.display = 'none');
                 sections.forEach(sec => {
                     sec.style.display = 'block';
-                    sec.style.opacity = '1';
-                    sec.style.animation = 'none';
-                    sec.style.transition = 'none';
                 });
 
-                // 3. 終極排版重置 (修正偏移跑板問題)
-                // 將所有干擾原點 (0,0) 的設定全部拔除，強迫文件置頂對齊
+                // 3. 視窗欺騙：強制讓手機/平板認為自己是 800px 的大螢幕，自然展開，不產生溢出裁切
+                const viewportMeta = document.querySelector('meta[name="viewport"]');
+                const originalViewport = viewportMeta.getAttribute('content');
+                viewportMeta.setAttribute('content', 'width=800, initial-scale=1.0');
+
+                // 解除高度封印與防浮水印設定
                 const printStyle = document.createElement('style');
                 printStyle.id = 'pdf-print-style';
                 printStyle.innerHTML = `
-                    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; animation: none !important; transition: none !important; opacity: 1 !important; }
                     
-                    /* 解除 flexbox 與滾動影響，強制定位於絕對左上角 */
-                    html, body { 
-                        display: block !important; 
-                        width: 800px !important; 
-                        height: auto !important; 
-                        overflow: visible !important; 
-                        margin: 0 !important; 
-                        padding: 0 !important; 
-                        position: static !important;
-                    }
+                    /* 殺手鐧：徹底解除外層的高低與 overflow 限制，讓引擎能捕捉全貌 */
+                    html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; display: block !important; }
                     .sidebar { display: none !important; }
+                    .main-content { flex: none !important; height: auto !important; overflow: visible !important; display: block !important; padding: 0 !important; background: #fff !important; }
                     
-                    .main-content { 
-                        display: block !important; 
-                        position: absolute !important; /* 殺手鐧：無視外部偏移，對齊左上角 */
-                        top: 0 !important; 
-                        left: 0 !important; 
-                        width: 800px !important; 
-                        padding: 0 !important; 
-                        margin: 0 !important; 
-                        overflow: visible !important; 
-                        background: #fff !important;
-                    }
-                    
-                    #pdf-container { 
-                        width: 800px !important; 
-                        max-width: 800px !important; 
-                        margin: 0 !important; 
-                        padding: 15px 30px !important; /* 左右留呼吸空間 */
-                    }
+                    /* 將容器設為標準 A4 寬度 */
+                    #pdf-container { width: 800px !important; max-width: 800px !important; margin: 0 auto !important; padding: 20px 40px !important; }
                     
                     body, p, span, label, h2, h3, h4, th, td { color: #000 !important; }
                     .card { break-inside: avoid !important; page-break-inside: avoid !important; border: 1px solid #cbd5e1 !important; box-shadow: none !important; background: #fff !important; margin-bottom: 20px !important;}
@@ -543,9 +521,10 @@
                 `;
                 document.head.appendChild(printStyle);
 
-                // 4. 強制捲軸回到最上方，防止引擎從中間截圖
+                // 確保捲軸回到最上方
                 window.scrollTo(0, 0);
 
+                // 4. 等待 0.5 秒讓 iOS WebKit 確實完成重繪與排版後再拍照
                 setTimeout(() => {
                     const studentName = document.getElementById('studentName').value || '未命名';
                     const date = document.getElementById('recordDate').value || '未填寫日期';
@@ -558,12 +537,9 @@
                         html2canvas: { 
                             scale: 1.5, 
                             useCORS: true, 
-                            windowWidth: 800, 
-                            width: 800, 
-                            scrollX: 0, // 殺手鐧：嚴格要求 X 軸從 0 抓取
-                            scrollY: 0, // 殺手鐧：嚴格要求 Y 軸從 0 抓取
                             backgroundColor: '#ffffff', 
                             logging: false 
+                            // 此版移除 windowWidth 強制設定，讓修改後的 viewport 自然發揮作用，杜絕出框裁切
                         },
                         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                     };
@@ -575,19 +551,15 @@
                         alert('匯出時發生錯誤，請重試。');
                         restoreUI();
                     });
-                }, 300);
+                }, 500);
 
+                // 5. 輸出完成，神不知鬼不覺復原畫面
                 function restoreUI() {
-                    sections.forEach(sec => {
-                        sec.style.display = '';
-                        sec.style.opacity = '';
-                        sec.style.animation = '';
-                        sec.style.transition = '';
-                    });
+                    viewportMeta.setAttribute('content', originalViewport);
+                    sections.forEach(sec => { sec.style.display = ''; });
                     hiddenEls.forEach(el => el.style.display = '');
                     const ps = document.getElementById('pdf-print-style');
                     if(ps) document.head.removeChild(ps);
-                    
                     btn.innerHTML = originalText;
                     btn.disabled = false;
                 }
