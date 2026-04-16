@@ -240,7 +240,7 @@
                     <h3 class="card-header">生命徵象 (Vital Signs)</h3>
                     <div class="table-responsive">
                         <table>
-                            <thead><tr><th>項目</th><th style="text-align:center;">休息時</th><th style="text-align:center;">活動時</th><th style="text-align:center;">休息5分後</th></tr></thead>
+                            <thead><tr><th>項目</th><th style="text-align:center;">休息時</th><th style="text-align:center;">活動時</th><th style="text-align:center;">休息後</th></tr></thead>
                             <tbody id="vitals-inputs"></tbody>
                         </table>
                     </div>
@@ -309,9 +309,9 @@
             cons: ['Clear', 'Drowsy', 'Stupor', 'Coma', 'Sedated'],
             o2: ['Room Air (無)', 'Nasal Cannula', 'Simple Mask', 'Venturi Mask', 'Non-rebreathing', 'High Flow NC', 'BiPAP/CPAP', 'Endo/Trach'],
             lines: ['Peripheral IV', 'CVC', 'A-line', 'Foley (尿管)', 'N-G tube', 'Chest Tube', 'Hemovac', 'EKG', 'Pacemaker'],
-            inspectLooks: ['Cyanosis (發紺)', 'Clubbing finger', 'JVD'],
+            inspectLooks: ['Cyanosis (發紺)', 'Clubbing finger', 'JVE'],
             inspectPattern: ['Normal', 'Dyspnea/SOB', 'Tachypnea', 'Apnea', 'Orthopnea'],
-            inspectMotion: ['呼吸輔助肌使用', '胸腹不協調呼吸'],
+            inspectMotion: ['正常','呼吸輔助肌使用', '胸腹不協調呼吸'],
             inspectChest: ['對稱', '偏弱: 右', '偏弱: 左'],
             auscultation: ['Normal', 'Decreased', 'Crackles', 'Wheezes'],
             cough: ['Functional', 'Weak', 'Non-functional', 'NA'],
@@ -322,7 +322,7 @@
 
         const vitalsFields = [
             { id: 'hr', label: '心跳 (HR)' }, { id: 'rr', label: '呼吸 (RR)' },
-            { id: 'spo2', label: '血氧 (SpO2)' }, { id: 'borg', label: '費力 (Borg)' }
+            { id: 'spo2', label: '血氧 (SpO2)' }, { id: 'borg', label: '費力 (Borg 6-20)' }
         ];
 
         let currentStep = 0;
