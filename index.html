@@ -86,10 +86,6 @@
     </style>
 </head>
 <body>
-<!-- Chosen Palette: Slate Gray, Medical Blue, Emerald Green -->
-<!-- Application Structure Plan: Sidebar Navigation with Main Content Area for steps. Optimized with pure CSS for absolute device compatibility without modern build tools. -->
-<!-- Visualization & Content Choices: Pure HTML/JS/CSS structure. Chart.js for visualization. html2pdf for localized snapshot rendering. -->
-<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -466,34 +462,60 @@
                 const container = document.getElementById('pdf-container');
                 const sections = document.querySelectorAll('.section-view');
                 
+                // 1. 將所有的輸入值鎖定至 HTML 結構中
                 container.querySelectorAll('input, textarea, select').forEach(input => {
                     if (input.tagName === 'TEXTAREA') { input.textContent = input.value; }
                     else if (input.tagName === 'SELECT') { const opt = input.options[input.selectedIndex]; if (opt) { Array.from(input.options).forEach(o => o.removeAttribute('selected')); opt.setAttribute('selected', 'selected'); } }
                     else { input.setAttribute('value', input.value); }
                 });
 
+                // 2. 動態生成「極致防護的高對比列印樣式表」
                 const printStyle = document.createElement('style');
                 printStyle.id = 'pdf-print-style';
                 printStyle.innerHTML = `
-                    .section-view { display: block !important; page-break-before: always; break-before: page; padding-top: 10px; }
-                    #step-0 { page-break-before: auto; break-before: auto; }
+                    /* 強制純白背景與純黑文字，消除浮水印感 */
+                    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                    .main-content { background-color: #ffffff !important; padding: 0 !important; }
+                    .container { width: 800px !important; max-width: 800px !important; margin: 0 auto !important; padding: 20px !important; background-color: #ffffff !important; }
+                    
+                    /* 取消所有淡入動畫，強制透明度100% */
+                    .section-view { display: block !important; opacity: 1 !important; animation: none !important; margin-bottom: 0 !important; }
+                    
+                    /* --- 核心分頁機制 (Page Break) --- */
+                    .section-view { page-break-before: always !important; break-before: page !important; padding-top: 20px !important; }
+                    #step-0 { page-break-before: auto !important; break-before: auto !important; padding-top: 0 !important; }
+                    
+                    /* 防止卡片或圖表被切斷 */
+                    .card { break-inside: avoid !important; page-break-inside: avoid !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important; box-shadow: none !important; margin-bottom: 20px !important; }
+                    .chart-container { break-inside: avoid !important; page-break-inside: avoid !important; }
+                    
+                    /* 隱藏不需要印出的按鈕 */
                     .btn-group, .btn-prev, .btn-next, .final-btn-wrap { display: none !important; }
-                    .card { break-inside: avoid; page-break-inside: avoid; }
-                    .chart-container { break-inside: avoid; page-break-inside: avoid; }
+                    
+                    /* 確保文字色彩飽和 */
+                    body, p, span, label, td, th { color: #000000 !important; }
+                    .section-title { color: #000000 !important; border-left-color: #000000 !important; }
+                    .toggle-btn { border-color: #000000 !important; color: #000000 !important; }
+                    .toggle-btn.active { background-color: #e2e8f0 !important; font-weight: bold !important; color: #000000 !important; border-width: 2px !important; }
+                    input, select, textarea { border: 1px solid #000000 !important; color: #000000 !important; background-color: #ffffff !important; }
                 `;
                 document.head.appendChild(printStyle);
 
+                // 3. 取得檔名參數
                 const studentName = document.getElementById('studentName').value || '未命名'; 
                 const date = document.getElementById('recordDate').value || '未填寫日期';
                 
+                // 4. 設定 html2pdf 參數
+                // scale 設為 1.5 降低記憶體佔用避免白紙；windowWidth 鎖定 800px 防止溢出；強制純白背景
                 html2pdf().set({ 
-                    margin: 10, 
+                    margin: [10, 0, 15, 0], // 上, 右, 下, 左 的邊界
                     filename: `見習紀錄_${studentName}_${date}.pdf`, 
-                    image: { type: 'jpeg', quality: 0.95 }, 
+                    image: { type: 'jpeg', quality: 1.0 }, 
                     pagebreak: { mode: ['css', 'legacy'] },
-                    html2canvas: { scale: 1.5, useCORS: true, windowWidth: 1024, scrollY: 0 }, 
+                    html2canvas: { scale: 1.5, useCORS: true, windowWidth: 800, backgroundColor: '#ffffff', logging: false }, 
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
                 }).from(container).save().then(() => {
+                    // 5. 輸出完成後復原所有 UI
                     document.head.removeChild(printStyle);
                     sections.forEach(sec => sec.style.display = '');
                     btn.innerHTML = originalText; btn.disabled = false;
@@ -501,7 +523,7 @@
                     document.head.removeChild(printStyle);
                     sections.forEach(sec => sec.style.display = '');
                     btn.innerHTML = originalText; btn.disabled = false;
-                    alert('PDF 匯出失敗，請檢查裝置記憶體限制。');
+                    alert('匯出時發生記憶體不足錯誤，請重新整理頁面後重試。');
                 });
             });
 
